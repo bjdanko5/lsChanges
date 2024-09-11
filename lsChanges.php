@@ -123,3 +123,90 @@ SOAP method lsChanges returns an associative array with the following structure:
 Режим: обязательный, строковый (статус или изменения).
 Начало и конец диапазона изменений: необязательные, целые числа (для режима изменений).
 */
+
+//без ассоциативных массивов
+/*
+
+// SOAP client settings
+$soapClient = new SoapClient('http://example.com/soap/wsdl');
+
+// Function to handle GET requests
+function handleGetRequest() {
+  $id = $_GET['id'];
+  $base = $_GET['base'];
+  $dt = $_GET['dt'];
+  $mode = $_GET['mode'];
+  $start = $_GET['start'];
+  $end = $_GET['end'];
+
+  // Validate input parameters
+  if (!isset($id) || !isset($base) || !isset($dt) || !isset($mode)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid input parameters']);
+    exit;
+  }
+
+  // Call SOAP method to retrieve data
+  $result = $soapClient->lsChanges($id, $base, $dt, $mode, $start, $end);
+
+  // Handle response data
+  if ($mode == 'status') {
+    $responseData = [
+      'Статус' => [
+        'КоличествоИзменений' => $result->КоличествоИзменений,
+        'ДатаИзменений' => $result->ДатаИзменений,
+      ],
+    ];
+  } elseif ($mode == 'changes') {
+    $responseData = [
+      'ДатаИзменений' => $result->ДатаИзменений,
+      'Изменения' => [],
+    ];
+    foreach ($result->Изменения as $change) {
+      $responseData['Изменения'][] = [
+        'ЛС' => $change->ЛС,
+        'Адрес' => $change->Адрес,
+        'ФИО' => $change->ФИО,
+        'Жильцов' => $change->Жильцов,
+        'Статус ЛС' => $change->СтатусЛС,
+        'Новый' => $change->Новый,
+      ];
+    }
+  }
+
+  // Return response data in JSON format
+  header('Content-Type: application/json; charset=UTF-8');
+  echo json_encode($responseData);
+}
+
+// Handle GET request
+handleGetRequest();
+
+?>
+stdClass Object
+(
+  [КоличествоИзменений] => 100
+  [ДатаИзменений] => 22.08.2024
+  [Изменения] => Array
+    (
+      [0] => stdClass Object
+        (
+          [ЛС] => 1001
+          [Адрес] => г.Париж,ул.Сен-Дюбуа,д.5 кв.4
+          [ФИО] => Макрон Э.М.
+          [Жильцов] => 2
+          [СтатусЛС] => Открыт
+          [Новый] => Да
+        )
+      [1] => stdClass Object
+        (
+          [ЛС] => 1002
+          [Адрес] => г.Париж,ул.Сен-Дюбуа,д.5 кв.6
+          [ФИО] => Макрон Б.Б.
+          [Жильцов] => 3
+          [СтатусЛС] => Закрыт
+          [Новый] => Нет
+        )
+    )
+)
+*/ 
