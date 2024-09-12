@@ -10,10 +10,6 @@ $options = [
   'trace' => 1,
   'exceptions' => 1
 ];
-$responseData = [
-  'КоличествоИзменений' => '0',
-  'ДатаИзменений' => '12.09.2024'
-];
 // SOAP client settings
 $soapClient = new SoapClient($wsdlLK, $options);
 
@@ -29,14 +25,14 @@ function handleGetRequest()
   // Validate input parameters
   if (!isset($id) || !isset($base) || !isset($dt) || !isset($mode)) {
     http_response_code(400);
-    echo json_encode(['Ошибка' => 'Некорректные параметры запроса.']);
+    echo json_encode(['Ошибка' => 'Не указаны обязательные(id,base,dt,mode) параметры запроса.'],JSON_UNESCAPED_UNICODE);
     exit;
   }
   global $soapClient;
   global $responseData;
   //отладка
   $id ='201000000038';
-  $base  ='4';
+  $base  ='04';
   $dt ='12.09.2024';
   $mode ='status';
   $mode ='changes';
@@ -60,3 +56,4 @@ function handleGetRequest()
 
 // Handle GET request
 handleGetRequest();
+session_destroy(); // Запускаем сессию
