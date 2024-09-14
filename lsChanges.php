@@ -1,5 +1,6 @@
 <?php
 ini_set('display_errors', 1);
+ini_set('default_socket_timeout', 5); // установить таймаут в 30 секунд
 error_reporting(E_ALL);
 session_start(); // Запускаем сессию
 ini_set("soap.wsdl_cache_enabled", "0");
@@ -8,7 +9,8 @@ $options = [
   'login' => "Администратор",
   'password' => "",
   'trace' => 1,
-  'exceptions' => 1
+  'exceptions' => 1,
+  'connection_timeout' => 5
 ];
 $logFile = 'lsChanges.log';
 
@@ -81,8 +83,8 @@ function handleGetRequest()
 
 function logMessage($logFile, $msg ='') {
   
-  $maxLogSize = 1024 * 1024; // 1MB
-  $maxPrevLogSize = 5 * 1024 * 1024; // 5MB
+  $maxLogSize = 8 * 1024; 
+  $maxPrevLogSize = 1 * 1024 * 1024; 
   $prevLogFile = $logFile . '.prev';
   $numLinesToKeep = 100;
 
@@ -102,14 +104,16 @@ function logMessage($logFile, $msg ='') {
 logMessage($logFile, "STARTED");
 // SOAP client settings
 try {
- // $soapClient = new SoapClient($wsdlLK, $options);
+  $soapClient = new SoapClient($wsdlLK, $options);
  // handleGetRequest();
 } catch (SoapFault $e) {
   // Handle SoapFault exception
   echo "SoapFault: " . $e->getMessage();
+  logMessage($logFile, "SOAPFAULT"." ".$e->getMessage());
 } catch (Exception $e) {
   // Handle other exceptions
   echo "Error: " . $e->getMessage();
+    logMessage($logFile, "ERROR"." ".$e->getMessage());
 }
 
 session_destroy(); 
