@@ -53,7 +53,53 @@ function handleGetRequest()
   //echo json_encode( $responseData,JSON_UNESCAPED_UNICODE );
   echo $result;
 }
+function logMessage($logFile, $msg ='') {
+  function requiredLogPart() {
+      // Получите текущую дату и время
+      $dateTime = date('Y-m-d H:i:s');
+
+      // Получите IP-адрес клиента
+      $ipAddress = $_SERVER['REMOTE_ADDR'];
+
+      // Получите GET-параметры
+      $getParams = $_GET;
+
+      // Создайте строку для логирования
+      $logString = "$dateTime | $ipAddress | " . json_encode($getParams) . "\n";
+      return $logString;
+  }
+
+  $maxLogSize = 1024 * 1024; // 1MB
+  $maxPrevLogSize = 5 * 1024 * 1024; // 5MB
+  $prevLogFile = $logFile . '.prev';
+  $numLinesToKeep = 100;
+
+  function appendToPrevLog($prevLogFile, $logLines) {
+      file_put_contents($prevLogFile, implode("\n", $logLines), FILE_APPEND);
+  }
+
+  function truncateLog($logFile, $maxLogSize, $numLinesToKeep) {
+      $logContent = file_get_contents($logFile);
+      $logLines = explode("\n", $logContent);
+      $logLines = array_slice($logLines, -$numLinesToKeep);
+      $logContent = implode("\n", $logLines);
+      file_put_contents($logFile, $logContent);
+      return $logLines;
+  }
+
+  $logString = requiredLogPart() . $msg . "\n";
+  $logSize = filesize($logFile);
+  if ($logSize > $maxLogSize) {
+      $logLines = truncateLog($logFile, $maxLogSize, $numLinesToKeep);
+      appendToPrevLog($prevLogFile, $logLines);
+      truncateLog($prevLogFile, $maxPrevLogSize, 1000);
+  }
+
+  file_put_contents($logFile, $logString, FILE_APPEND | LOCK_EX);
+}
 
 // Handle GET request
+logMessage($logFile, "STARTED");
 handleGetRequest();
-session_destroy(); // Запускаем сессию
+session_destroy(); 
+logMessage($logFile, "COMPLETE");
