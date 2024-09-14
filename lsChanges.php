@@ -104,16 +104,15 @@ function logMessage($logFile, $msg ='') {
 logMessage($logFile, "STARTED");
 // SOAP client settings
 try {
-  $soapClient = new SoapClient($wsdlLK, $options);
- // handleGetRequest();
-} catch (SoapFault $e) {
-  // Handle SoapFault exception
-  echo "SoapFault: " . $e->getMessage();
-  logMessage($logFile, "SOAPFAULT"." ".$e->getMessage());
+    $soapClient = new SoapClient($wsdlLK, $options);
+    handleGetRequest();
 } catch (Exception $e) {
-  // Handle other exceptions
-  echo "Error: " . $e->getMessage();
-    logMessage($logFile, "ERROR"." ".$e->getMessage());
+    // Handle exceptions
+    $errorMessage = $e instanceof SoapFault ? "SoapFault: " . $e->getMessage() : "Error: " . $e->getMessage();
+    header('Content-Type: application/json; charset=UTF-8');
+    $error = array("Ошибка" => $errorMessage);
+    echo json_encode($error, JSON_UNESCAPED_UNICODE);
+    logMessage($logFile, $errorMessage);
 }
 
 session_destroy(); 
