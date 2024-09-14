@@ -10,8 +10,7 @@ $options = [
   'trace' => 1,
   'exceptions' => 1
 ];
-// SOAP client settings
-$soapClient = new SoapClient($wsdlLK, $options);
+$logFile = 'lsChanges.log';
 
 // Function to handle GET requests
 function handleGetRequest()
@@ -53,42 +52,43 @@ function handleGetRequest()
   //echo json_encode( $responseData,JSON_UNESCAPED_UNICODE );
   echo $result;
 }
+ function requiredLogPart() {
+  // Получите текущую дату и время
+  $dateTime = date('Y-m-d H:i:s');
+
+  // Получите IP-адрес клиента
+  $ipAddress = $_SERVER['REMOTE_ADDR'];
+
+  // Получите GET-параметры
+  $getParams = $_GET;
+
+  // Создайте строку для логирования
+  $logString = "$dateTime | $ipAddress | " . json_encode($getParams) ;
+  return $logString;
+}
+ function appendToPrevLog($prevLogFile, $logLines) {
+  file_put_contents($prevLogFile, implode("\n", $logLines), FILE_APPEND);
+}
+
+ function truncateLog($logFile, $maxLogSize, $numLinesToKeep) {
+  $logContent = file_get_contents($logFile);
+  $logLines = explode("\n", $logContent);
+  $logLines = array_slice($logLines, -$numLinesToKeep);
+  $logContent = implode("\n", $logLines);
+  file_put_contents($logFile, $logContent);
+  return $logLines;
+}
+
 function logMessage($logFile, $msg ='') {
-  function requiredLogPart() {
-      // Получите текущую дату и время
-      $dateTime = date('Y-m-d H:i:s');
-
-      // Получите IP-адрес клиента
-      $ipAddress = $_SERVER['REMOTE_ADDR'];
-
-      // Получите GET-параметры
-      $getParams = $_GET;
-
-      // Создайте строку для логирования
-      $logString = "$dateTime | $ipAddress | " . json_encode($getParams) . "\n";
-      return $logString;
-  }
-
+  
   $maxLogSize = 1024 * 1024; // 1MB
   $maxPrevLogSize = 5 * 1024 * 1024; // 5MB
   $prevLogFile = $logFile . '.prev';
   $numLinesToKeep = 100;
 
-  function appendToPrevLog($prevLogFile, $logLines) {
-      file_put_contents($prevLogFile, implode("\n", $logLines), FILE_APPEND);
-  }
 
-  function truncateLog($logFile, $maxLogSize, $numLinesToKeep) {
-      $logContent = file_get_contents($logFile);
-      $logLines = explode("\n", $logContent);
-      $logLines = array_slice($logLines, -$numLinesToKeep);
-      $logContent = implode("\n", $logLines);
-      file_put_contents($logFile, $logContent);
-      return $logLines;
-  }
-
-  $logString = requiredLogPart() . $msg . "\n";
-  $logSize = filesize($logFile);
+  $logString = requiredLogPart() ." ". $msg . "\n";
+  $logSize = file_exists($logFile) ? filesize($logFile) : 0;
   if ($logSize > $maxLogSize) {
       $logLines = truncateLog($logFile, $maxLogSize, $numLinesToKeep);
       appendToPrevLog($prevLogFile, $logLines);
@@ -100,6 +100,17 @@ function logMessage($logFile, $msg ='') {
 
 // Handle GET request
 logMessage($logFile, "STARTED");
-handleGetRequest();
+// SOAP client settings
+try {
+ // $soapClient = new SoapClient($wsdlLK, $options);
+ // handleGetRequest();
+} catch (SoapFault $e) {
+  // Handle SoapFault exception
+  echo "SoapFault: " . $e->getMessage();
+} catch (Exception $e) {
+  // Handle other exceptions
+  echo "Error: " . $e->getMessage();
+}
+
 session_destroy(); 
 logMessage($logFile, "COMPLETE");
