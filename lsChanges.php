@@ -119,6 +119,18 @@ function logMessage($logFile, $msg = '')
 
 // Handle GET request
 logMessage($logFile, "STARTED");
+if ($_GET['mode'] == 'log') {
+    $log_file = $logFile;
+    if (file_exists($log_file)) {
+        $lines = file($log_file, FILE_IGNORE_NEW_LINES);
+        $last_20_lines = array_slice($lines, -20);
+        $last_20_lines = array_reverse($last_20_lines); // Reverse the order
+        echo implode('<br>', $last_20_lines);
+    } else {
+        echo "Error: Log file does not exist.";
+    }
+    exit;
+}
 // SOAP client settings
 try {
   $soapClient = new SoapClient($wsdlLK, $options);
