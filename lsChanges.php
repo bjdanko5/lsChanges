@@ -96,8 +96,21 @@ function logMessage($logFile, $msg ='') {
       appendToPrevLog($prevLogFile, $logLines);
       truncateLog($prevLogFile, $maxPrevLogSize, 1000);
   }
-
-  file_put_contents($logFile, $logString, FILE_APPEND | LOCK_EX);
+  error_reporting(E_ALL & ~E_WARNING);
+  try {
+    $result = file_put_contents($logFile, $logString, FILE_APPEND | LOCK_EX);  
+    if ($result === false) {
+        throw new Exception('Ошибка записи в лог файл lsChanges.log.Надо дать права на запись в каталог /lsChanges');
+    } 
+  
+} catch (Exception $e) {
+  $errorMessage = "Error: " . $e->getMessage();
+  $error = array("Ошибка" => $errorMessage);
+  header('Content-Type: application/json; charset=UTF-8');
+  echo json_encode($error, JSON_UNESCAPED_UNICODE);
+  //exit;
+}
+error_reporting(E_ALL);
 }
 
 // Handle GET request
@@ -108,11 +121,14 @@ try {
     handleGetRequest();
 } catch (Exception $e) {
     // Handle exceptions
-    $errorMessage = $e instanceof SoapFault ? "SoapFault: " . $e->getMessage() : "Error: " . $e->getMessage();
-    header('Content-Type: application/json; charset=UTF-8');
-    $error = array("Ошибка" => $errorMessage);
-    echo json_encode($error, JSON_UNESCAPED_UNICODE);
     logMessage($logFile, $errorMessage);
+    $errorMessage = $e instanceof SoapFault ? "SoapFault: " . $e->getMessage() : "Error: " . $e->getMessage();
+    
+    
+    $error = array("Ошибка" => $errorMessage);
+    header('Content-Type: application/json; charset=UTF-8');
+    echo json_encode($error, JSON_UNESCAPED_UNICODE);
+    
 }
 
 session_destroy(); 
