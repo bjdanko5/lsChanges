@@ -26,19 +26,19 @@ function handleGetRequest()
   // Validate input parameters
   if (!isset($id) || !isset($base) || !isset($dt) || !isset($mode)) {
     http_response_code(400);
-    echo json_encode(['Ошибка' => 'Не указаны обязательные(id,base,dt,mode) параметры запроса.'],JSON_UNESCAPED_UNICODE);
+    echo json_encode(['Ошибка' => 'Не указаны обязательные(id,base,dt,mode) параметры запроса.'], JSON_UNESCAPED_UNICODE);
     exit;
   }
   global $soapClient;
   global $responseData;
   //отладка
-  $id ='201000000038';
-  $base  ='04';
-  $dt ='12.09.2024';
-  $mode ='status';
-  $mode ='changes';
-  $start ='1';
-  $end ='100';
+ /*  $id = '201000000038';
+  $base = '04';
+  $dt = '12.09.2024';
+  $mode = 'status';
+  $mode = 'changes';
+  $start = '1';
+  $end = '100'; */
 
   $result = $soapClient->lsChanges([
     'id' => $id,
@@ -48,13 +48,14 @@ function handleGetRequest()
     'start' => $start,
     'end' => $end
   ])->return;
-  
-   // Return response data in JSON format
+
+  // Return response data in JSON format
   header('Content-Type: application/json; charset=UTF-8');
   //echo json_encode( $responseData,JSON_UNESCAPED_UNICODE );
   echo $result;
 }
- function requiredLogPart() {
+function requiredLogPart()
+{
   // Получите текущую дату и время
   $dateTime = date('Y-m-d H:i:s');
 
@@ -65,14 +66,16 @@ function handleGetRequest()
   $getParams = $_GET;
 
   // Создайте строку для логирования
-  $logString = "$dateTime | $ipAddress | " . json_encode($getParams) ;
+  $logString = "$dateTime | $ipAddress | " . json_encode($getParams);
   return $logString;
 }
- function appendToPrevLog($prevLogFile, $logLines) {
+function appendToPrevLog($prevLogFile, $logLines)
+{
   file_put_contents($prevLogFile, implode("\n", $logLines), FILE_APPEND);
 }
 
- function truncateLog($logFile, $maxLogSize, $numLinesToKeep) {
+function truncateLog($logFile, $maxLogSize, $numLinesToKeep)
+{
   $logContent = file_get_contents($logFile);
   $logLines = explode("\n", $logContent);
   $logLines = array_slice($logLines, -$numLinesToKeep);
@@ -81,55 +84,56 @@ function handleGetRequest()
   return $logLines;
 }
 
-function logMessage($logFile, $msg ='') {
-  
-  $maxLogSize = 8 * 1024; 
-  $maxPrevLogSize = 1 * 1024 * 1024; 
+function logMessage($logFile, $msg = '')
+{
+
+  $maxLogSize = 8 * 1024;
+  $maxPrevLogSize = 1 * 1024 * 1024;
   $prevLogFile = $logFile . '.prev';
   $numLinesToKeep = 100;
 
 
-  $logString = requiredLogPart() ." ". $msg . "\n";
+  $logString = requiredLogPart() . " " . $msg . "\n";
   $logSize = file_exists($logFile) ? filesize($logFile) : 0;
   if ($logSize > $maxLogSize) {
-      $logLines = truncateLog($logFile, $maxLogSize, $numLinesToKeep);
-      appendToPrevLog($prevLogFile, $logLines);
-      truncateLog($prevLogFile, $maxPrevLogSize, 1000);
+    $logLines = truncateLog($logFile, $maxLogSize, $numLinesToKeep);
+    appendToPrevLog($prevLogFile, $logLines);
+    truncateLog($prevLogFile, $maxPrevLogSize, 1000);
   }
   error_reporting(E_ALL & ~E_WARNING);
   try {
-    $result = file_put_contents($logFile, $logString, FILE_APPEND | LOCK_EX);  
+    $result = file_put_contents($logFile, $logString, FILE_APPEND | LOCK_EX);
     if ($result === false) {
-        throw new Exception('Ошибка записи в лог файл lsChanges.log.Надо дать права на запись в каталог /lsChanges');
-    } 
-  
-} catch (Exception $e) {
-  $errorMessage = "Error: " . $e->getMessage();
-  $error = array("Ошибка" => $errorMessage);
-  header('Content-Type: application/json; charset=UTF-8');
-  echo json_encode($error, JSON_UNESCAPED_UNICODE);
-  //exit;
-}
-error_reporting(E_ALL);
+      throw new Exception('Ошибка записи в лог файл lsChanges.log.Надо дать права на запись в каталог /lsChanges');
+    }
+
+  } catch (Exception $e) {
+    $errorMessage = "Error: " . $e->getMessage();
+    $error = array("Ошибка" => $errorMessage);
+    header('Content-Type: application/json; charset=UTF-8');
+    echo json_encode($error, JSON_UNESCAPED_UNICODE);
+    //exit;
+  }
+  error_reporting(E_ALL);
 }
 
 // Handle GET request
 logMessage($logFile, "STARTED");
 // SOAP client settings
 try {
-    $soapClient = new SoapClient($wsdlLK, $options);
-    handleGetRequest();
+  $soapClient = new SoapClient($wsdlLK, $options);
+  handleGetRequest();
 } catch (Exception $e) {
-    // Handle exceptions
-    logMessage($logFile, $errorMessage);
-    $errorMessage = $e instanceof SoapFault ? "SoapFault: " . $e->getMessage() : "Error: " . $e->getMessage();
-    
-    
-    $error = array("Ошибка" => $errorMessage);
-    header('Content-Type: application/json; charset=UTF-8');
-    echo json_encode($error, JSON_UNESCAPED_UNICODE);
-    
+  // Handle exceptions
+  logMessage($logFile, $errorMessage);
+  $errorMessage = $e instanceof SoapFault ? "SoapFault: " . $e->getMessage() : "Error: " . $e->getMessage();
+
+
+  $error = array("Ошибка" => $errorMessage);
+  header('Content-Type: application/json; charset=UTF-8');
+  echo json_encode($error, JSON_UNESCAPED_UNICODE);
+
 }
 
-session_destroy(); 
+session_destroy();
 logMessage($logFile, "COMPLETE");
