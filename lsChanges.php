@@ -54,6 +54,28 @@ function handleGetRequest()
   //echo json_encode( $responseData,JSON_UNESCAPED_UNICODE );
   echo $result;
 }
+// Function to get the client ip address
+function get_client_ip_server() {
+  error_reporting(E_ALL & ~E_WARNING);
+  $ipaddress = '';
+  if (isset($_SERVER['HTTP_CLIENT_IP']) && $_SERVER['HTTP_CLIENT_IP'] !== '') {
+      $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+  } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'] !== '') {
+      $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+  } elseif (isset($_SERVER['HTTP_X_FORWARDED']) && $_SERVER['HTTP_X_FORWARDED'] !== '') {
+      $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+  } elseif (isset($_SERVER['HTTP_FORWARDED_FOR']) && $_SERVER['HTTP_FORWARDED_FOR'] !== '') {
+      $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+  } elseif (isset($_SERVER['HTTP_FORWARDED']) && $_SERVER['HTTP_FORWARDED'] !== '') {
+      $ipaddress = $_SERVER['HTTP_FORWARDED'];
+  } elseif (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] !== '') {
+      $ipaddress = $_SERVER['REMOTE_ADDR'];
+  } else {
+      $ipaddress = 'UNKNOWN';
+  }
+  error_reporting(E_ALL);
+  return $ipaddress;
+}
 function requiredLogPart()
 {
   // Получите текущую дату и время
@@ -61,12 +83,15 @@ function requiredLogPart()
 
   // Получите IP-адрес клиента
   $ipAddress = $_SERVER['REMOTE_ADDR'];
+  $ipAddress = get_client_ip_server();
 
   // Получите GET-параметры
   $getParams = $_GET;
 
   // Создайте строку для логирования
-  $logString = "$dateTime | $ipAddress | " . json_encode($getParams);
+  error_reporting(E_ALL & ~E_WARNING);
+  $logString = "$dateTime | $ipAddress | " . json_encode($getParams). "| ";
+  error_reporting(E_ALL);
   return $logString;
 }
 function appendToPrevLog($prevLogFile, $logLines)
@@ -125,7 +150,28 @@ if ($_GET['mode'] == 'log') {
         $lines = file($log_file, FILE_IGNORE_NEW_LINES);
         $last_20_lines = array_slice($lines, -20);
         $last_20_lines = array_reverse($last_20_lines); // Reverse the order
-        echo implode('<br>', $last_20_lines);
+
+ // Create a table header
+ echo '<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">';
+ echo '<caption style="font-weight: bold; font-size: 18px;">Последние записи Log</caption>';
+ echo '<tr style="background-color: #f0f0f0;">';
+ echo '<th style="padding: 10px;">Дата и время</th>';
+ echo '<th style="padding: 10px;">IP-адрес</th>';
+ echo '<th style="padding: 10px;">GET-параметры</th>';
+ echo '<th style="padding: 10px;">Этап выполнения / Ошибка</th>';
+ echo '</tr>';
+ 
+ // Output each log entry as table cells
+ foreach ($last_20_lines as $line) {
+     $cells = explode('|', $line);
+     echo '<tr style="background-color: #fff;">';
+     foreach ($cells as $cell) {
+         echo '<td style="padding: 10px; border: 1px solid #ddd;">' . $cell . '</td>';
+     }
+     echo '</tr>';
+ }
+ 
+ echo '</table>';
     } else {
         echo "Error: Log file does not exist.";
     }
@@ -137,12 +183,12 @@ try {
   handleGetRequest();
 } catch (Exception $e) {
   // Handle exceptions
-  logMessage($logFile, $errorMessage);
   $errorMessage = $e instanceof SoapFault ? "SoapFault: " . $e->getMessage() : "Error: " . $e->getMessage();
 
 
   $error = array("Ошибка" => $errorMessage);
   header('Content-Type: application/json; charset=UTF-8');
+  logMessage($logFile, $errorMessage);
   echo json_encode($error, JSON_UNESCAPED_UNICODE);
 
 }

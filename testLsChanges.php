@@ -55,10 +55,10 @@ $full_url_log = constructUrl("log", $params_log);
                 url: '<?php echo $full_url_log; ?>',
                 success: function (data) {
                     $('#log-content').html(data);
-                    $('#log-content').css({
+                  /*   $('#log-content').css({
                         'border': '1px dashed #ccc',
                         'padding': '10px'
-                    });
+                    }); */
                 }
             });
         });
