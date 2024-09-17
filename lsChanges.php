@@ -1,6 +1,6 @@
 <?php
 ini_set('display_errors', 1);
-ini_set('default_socket_timeout', 5); // установить таймаут в 30 секунд
+ini_set('default_socket_timeout', 15); // установить таймаут в 30 секунд
 error_reporting(E_ALL);
 session_start(); // Запускаем сессию
 ini_set("soap.wsdl_cache_enabled", "0");
@@ -10,7 +10,7 @@ $options = [
   'password' => "",
   'trace' => 1,
   'exceptions' => 1,
-  'connection_timeout' => 5
+  'connection_timeout' => 15
 ];
 $logFile = 'lsChanges.log';
 
@@ -23,6 +23,13 @@ function handleGetRequest()
   $mode = isset($_GET['mode']) ? $_GET['mode'] : '';
   $start = isset($_GET['start']) ? $_GET['start'] : '';
   $end = isset($_GET['end']) ? $_GET['end'] : '';
+
+ /*  if (!isset($id) || !isset($base) || !isset($dt) || !isset($mode)) {
+    http_response_code(500);
+    echo json_encode(['Ошибка' => 'Не указаны обязательные(id,base,dt,mode) параметры запроса.'], JSON_UNESCAPED_UNICODE);
+    exit;
+  }
+ */
   // Validate input parameters
   if (!isset($id) || !isset($base) || !isset($dt) || !isset($mode)) {
     http_response_code(400);
@@ -48,6 +55,15 @@ function handleGetRequest()
     'start' => $start,
     'end' => $end
   ])->return;
+  $responce = json_decode($result, true);
+
+  if (isset($responce['Ошибка']) && $responce['Ошибка']!='') {
+    $responce['Ошибка'] = "<b>Error 500</b> ".$responce['Ошибка'];
+    http_response_code(500);
+    echo $responce['Ошибка'];
+   // echo json_encode(['Ошибка' => 'Не указаны обязательные(id,base,dt,mode) параметры запроса.'], JSON_UNESCAPED_UNICODE);
+    exit;
+  }
 
   // Return response data in JSON format
   header('Content-Type: application/json; charset=UTF-8');
@@ -144,7 +160,7 @@ function logMessage($logFile, $msg = '')
 
 // Handle GET request
 logMessage($logFile, "STARTED");
-if ($_GET['mode'] == 'log') {
+if (isset($_GET['mode']) && $_GET['mode'] == 'log') {
     $log_file = $logFile;
     if (file_exists($log_file)) {
         $lines = file($log_file, FILE_IGNORE_NEW_LINES);
