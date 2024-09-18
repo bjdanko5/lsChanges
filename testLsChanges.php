@@ -16,6 +16,13 @@ $full_url_status = constructUrl("status", $params_status);
 $params_changes = "id=201000003125&base=04&dt=17.09.2024&mode=changes&start=1&end=100";
 $full_url_changes = constructUrl("changes", $params_changes);
 
+$params_status_pay = "id=201000003125&base=04&dt=17.09.2024&mode=status_pay";
+$full_url_status_pay = constructUrl("status_pay", $params_status_pay);
+
+$params_changes_pay = "id=201000003125&base=04&dt=17.09.2024&mode=changes_pay&start=1&end=100";
+$full_url_changes_pay = constructUrl("changes_pay", $params_changes_pay);
+
+
 $params_log = "mode=log";
 $full_url_log = constructUrl("log", $params_log);
 
@@ -26,6 +33,12 @@ $full_url_status1 = constructUrl("status", $params_status1);
 $params_changes1 = "id=201000003592&base=04&dt=17.09.2024&mode=changes&start=1&end=100";
 $full_url_changes1 = constructUrl("changes", $params_changes1);
 
+$params_status1_pay = "id=201000003592&base=04&dt=17.09.2024&mode=status_pay";
+$full_url_status1_pay = constructUrl("status_pay", $params_status1_pay);
+
+$params_changes1_pay = "id=201000003592&base=04&dt=17.09.2024&mode=changes_pay&start=1&end=100";
+$full_url_changes1_pay = constructUrl("changes_pay", $params_changes1_pay);
+
 ?>
 
 <div
@@ -33,6 +46,7 @@ $full_url_changes1 = constructUrl("changes", $params_changes1);
     <h3 style="margin-top: 0;">Тестовые запросы</h3>
     <hr>
     <h4 style="margin-top: 0;">Экоград Азов</h4>
+    <h5 style="margin-top: 0;">Изменения реквизитов ЛС</h5>
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
         <div style="width: 45%; margin: 20px;">
             <h5>Режим Статус (mode = status)</h5>
@@ -45,8 +59,24 @@ $full_url_changes1 = constructUrl("changes", $params_changes1);
                 style="display: block; padding: 10px; background-color: #337ab7; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><?php echo $full_url_changes; ?></a>
         </div>
     </div>
-    <h4 style="margin-top: 0;">Экоград Новочеркасск</h4>
+    <h5 style="margin-top: 0;">Изменения оплат ЛС</h5>
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+        <div style="width: 45%; margin: 20px;">
+            <h5>Режим Статус (mode = status_pay)</h5>
+            <a href="<?php echo $full_url_status_pay; ?>"
+                style="display: block; padding: 10px; background-color: #337ab7; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><?php echo $full_url_status_pay; ?></a>
+        </div>
+        <div style="width: 45%; margin: 20px;">
+            <h5>Режим Изменения (mode = changes_pay)</h5>
+            <a href="<?php echo $full_url_changes_pay; ?>"
+                style="display: block; padding: 10px; background-color: #337ab7; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><?php echo $full_url_changes_pay; ?></a>
+        </div>
+    </div>
+
+    <h4 style="margin-top: 0;">Экоград Новочеркасск</h4>
+    <h5 style="margin-top: 0;">Изменения реквизитов ЛС</h5>
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+    
         <div style="width: 45%; margin: 20px;">
             <h5>Режим Статус (mode = status)</h5>
             <a href="<?php echo $full_url_status1; ?>"
@@ -58,6 +88,21 @@ $full_url_changes1 = constructUrl("changes", $params_changes1);
                 style="display: block; padding: 10px; background-color: #337ab7; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><?php echo $full_url_changes1; ?></a>
         </div>
     </div>
+    <h5 style="margin-top: 0;">Изменения оплат ЛС</h5>
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+    
+        <div style="width: 45%; margin: 20px;">
+            <h5>Режим Статус (mode = status_pay)</h5>
+            <a href="<?php echo $full_url_status1_pay; ?>"
+                style="display: block; padding: 10px; background-color: #337ab7; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><?php echo $full_url_status1_pay; ?></a>
+        </div>
+        <div style="width: 45%; margin: 20px;">
+            <h5>Режим Изменения (mode = changes_pay)</h5>
+            <a href="<?php echo $full_url_changes1_pay; ?>"
+                style="display: block; padding: 10px; background-color: #337ab7; color: #fff; border: none; border-radius: 5px; cursor: pointer;"><?php echo $full_url_changes1_pay; ?></a>
+        </div>
+    </div>
+
     <div style="width: 45%; margin: 20px;">
             <h5>Вывести лог (mode = log)</h5>
             <a id="log-link" href="<?php echo $full_url_log; ?>"
