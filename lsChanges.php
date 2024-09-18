@@ -31,11 +31,11 @@ function handleGetRequest()
   }
  */
   // Validate input parameters
-  if (!isset($id) || !isset($base) || !isset($dt) || !isset($mode)) {
+ /*  if (!isset($id) || !isset($base) || !isset($dt) || !isset($mode)) {
     http_response_code(400);
     echo json_encode(['Ошибка' => 'Не указаны обязательные(id,base,dt,mode) параметры запроса.'], JSON_UNESCAPED_UNICODE);
     exit;
-  }
+  } */
   global $soapClient;
   global $responseData;
   //отладка
