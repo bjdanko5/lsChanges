@@ -1,5 +1,4 @@
 <?php
-
 $header = "Тестовые запросы для сервиса lsChanges";
 echo "<h2 style='text-align: center; margin-bottom: 20px;'>$header</h2>";
 
