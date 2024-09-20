@@ -48,7 +48,12 @@
                 </div>
                 <div class="mb-2">
                     <label for="test-idName">Наименование ПолучателяОтчета(idName)</label>
-                    <input type="text" name="idName" id="test-idName" class="form-control" />
+                    <select name="idName" id="test-idName" class="form-control" hx-target="#test-idName" hx-get="/get-id-name-options" hx-trigger="load"
+                        hx-swap="innerHTML">
+                        {{ range .IDNameOptions }}
+                        <option value="{{ .Value }}" data-id="{{ .Id }}">{{ .IdName }}</option>
+                        {{ end }}
+                    </select>
                 </div>
                 <div class="mb-2">
                     <label for="test-modeName">Наименование режима(modeName)</label>

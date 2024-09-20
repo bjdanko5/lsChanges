@@ -26,15 +26,39 @@ type Tests struct {
 	End      string
 	FullUrl  string
 }
+type IDNameOption struct {
+	Value  int
+	Id     string
+	IdName string
+}
+
+func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
+	idNameOptions := []IDNameOption{
+		{Value: 1, Id: "201000003125", IdName: "Экоград Азов"},
+		{Value: 2, Id: "201000003592", IdName: "Экоград Новочеркасск"},
+	}
+
+	tmpl, err := template.ParseFiles("idNameOptions.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data := struct {
+		IDNameOptions []IDNameOption
+	}{
+		IDNameOptions: idNameOptions,
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
 
 func constructUrl(r *http.Request, params string) string {
 	//lsChangesScriptName := "lsChanges"
 	fullUrl := "http://" + strings.Split(r.Host, ":")[0] + "/lsChanges/lsChanges.php" + "?" + params
-	/* 	url := "http://" + r.Host + r.RequestURI
-	   	fullPath := r.URL.Path
-	   	Port = r.URL.Port()
-	   	fileName := path.Base(fullPath) */
-	//fullUrl := strings.Replace(url, fileName, lsChangesScriptName, 1) + "?" + params
 	return fullUrl
 }
 func main() {
@@ -65,19 +89,6 @@ func main() {
 		io.WriteString(w, r.Method) */
 	}
 
-	/*	h1 := func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("testLsChanges.html"))
-		films := map[string][]Film{ //ключ string - название таблицы, []Film - набор данных
-			"Films": {
-				{Title: "The Matrix", Director: "The Wachowskis"},
-				{Title: "The Matrix Reloaded", Director: "The Wachowskis"},
-				{Title: "The Matrix Revolutions", Director: "The Wachowskis"},
-			},
-		}
-		tmpl.Execute(w, films)
-		// 	io.WriteString(w, "Hello, World!")
-		//io.WriteString(w, r.Method)
-	} */
 	handleAddTest := func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(1 * time.Second)
 		log.Print("HTMX request recieved")
@@ -119,5 +130,6 @@ func main() {
 	//http.HandleFunc("/", h1)
 	http.HandleFunc("/", handleTests)
 	http.HandleFunc("/add-test/", handleAddTest)
+	http.HandleFunc("/get-id-name-options", GetIDNameOptions) // GetIDNameOptions
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
