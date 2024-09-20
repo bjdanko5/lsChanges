@@ -1,0 +1,5 @@
+    <select name="idName" id="test-idName" class="form-control" hx-get="/id-name-options" hx-target="#test-idName" hx-trigger="load">       
+     {{ range .idNameOptions }}
+          <option value="{{ .idName }}">{{ .idName }}</option>
+     {{ end }}
+    </select>

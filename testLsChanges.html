@@ -46,10 +46,12 @@
                     <label for="test-id" readonly hidden>Код Получатель отчета(id)</label>
                     <input type="text" name="id" id="test-id" class="form-control" readonly hidden/>
                 </div>
+                
                 <div class="mb-2">
                     <label for="test-idNameText"readonly hidden>Текст Получатель отчета(idNameText) readonly hidden</label>
                     <input type="text" name="idNameText" id="test-idNameText" class="form-control" readonly hidden/>
                 </div>
+
                 <div class="mb-2">
                     <label for="test-idName">Наименование ПолучателяОтчета(idName) </label>
                   <select name="idName" id="test-idName" class="form-select" hx-target="#test-idName" hx-get="/get-id-name-options" hx-trigger="load, change" hx-swap="innerHTML">        
