@@ -44,12 +44,11 @@
             <form hx-post="/add-test/" hx-target="#test-list" hx-swap="afterbegin" hx-indicator="#spinner">
                 <div class="mb-2">
                     <label for="test-id">Получатель отчета(id)</label>
-                    <input type="text" name="id" id="test-id" class="form-control" />
+                    <input type="text" name="id" id="test-id" class="form-control" value="{{ .ID }}"/>
                 </div>
                 <div class="mb-2">
                     <label for="test-idName">Наименование ПолучателяОтчета(idName)</label>
-                    <select name="idName" id="test-idName" class="form-control" hx-target="#test-idName" hx-get="/get-id-name-options" hx-trigger="load"
-                        hx-swap="innerHTML">
+                  <select name="idName" id="test-idName" class="form-control" hx-target="#test-idName" hx-get="/get-id-name-options" hx-trigger="load, change" hx-swap="innerHTML"  >        
                         {{ range .IDNameOptions }}
                         <option value="{{ .Value }}" data-id="{{ .Id }}">{{ .IdName }}</option>
                         {{ end }}

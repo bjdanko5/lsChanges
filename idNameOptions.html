@@ -1,3 +1,4 @@
+{{.}}
 {{ range .IDNameOptions }}
-<option value="{{ .Value }}" data-id="{{ .Id }}">{{ .IdName }}</option>
+    <option value="{{ .Value }}" data-id="{{ .Id }}" {{ if eq .Value  .SelectedValue }}selected{{ end }}>{{ .IdName }}</option>
 {{ end }}

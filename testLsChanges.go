@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -27,16 +28,40 @@ type Tests struct {
 	FullUrl  string
 }
 type IDNameOption struct {
-	Value  int
-	Id     string
-	IdName string
+	Value         int
+	Id            string
+	IdName        string
+	SelectedValue int
 }
 
-func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
-	idNameOptions := []IDNameOption{
-		{Value: 1, Id: "201000003125", IdName: "Экоград Азов"},
-		{Value: 2, Id: "201000003592", IdName: "Экоград Новочеркасск"},
+func findIdByValue(options []IDNameOption, value int) string {
+	for _, option := range options {
+		if option.Value == value {
+			return option.Id
+		}
 	}
+	return ""
+}
+func convertToInt(idNameValue interface{}) int {
+	if idNameValue == nil || idNameValue == "" {
+		return 0
+	}
+	id, err := strconv.Atoi(idNameValue.(string))
+	if err != nil {
+		return 0
+	}
+	return id
+}
+func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	idNameValue := q.Get("idName")
+
+	idNameOptions := []IDNameOption{
+		{Value: 1, Id: "201000003125", IdName: "Экоград Азов", SelectedValue: convertToInt(idNameValue)},
+		{Value: 2, Id: "201000003592", IdName: "Экоград Новочеркасск", SelectedValue: convertToInt(idNameValue)},
+	}
+	selectedId := findIdByValue(idNameOptions, convertToInt(idNameValue))
+	fmt.Println(selectedId)
 
 	tmpl, err := template.ParseFiles("idNameOptions.html")
 	if err != nil {
@@ -54,6 +79,9 @@ func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+
+	// ...
+
 }
 
 func constructUrl(r *http.Request, params string) string {
