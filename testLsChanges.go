@@ -33,11 +33,25 @@ type IDNameOption struct {
 	IdName        string
 	SelectedValue int
 }
+type MODENameOption struct {
+	Value         int
+	Mode          string
+	ModeName      string
+	SelectedValue int
+}
 
 func findIdByValue(options []IDNameOption, value int) string {
 	for _, option := range options {
 		if option.Value == value {
 			return option.Id
+		}
+	}
+	return ""
+}
+func findModeByValue(options []MODENameOption, value int) string {
+	for _, option := range options {
+		if option.Value == value {
+			return option.Mode
 		}
 	}
 	return ""
@@ -55,7 +69,9 @@ func convertToInt(idNameValue interface{}) int {
 func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	idNameValue := q.Get("idName")
-
+	if idNameValue == "" {
+		idNameValue = "1"
+	}
 	idNameOptions := []IDNameOption{
 		{Value: 1, Id: "201000003125", IdName: "Экоград Азов", SelectedValue: convertToInt(idNameValue)},
 		{Value: 2, Id: "201000003592", IdName: "Экоград Новочеркасск", SelectedValue: convertToInt(idNameValue)},
@@ -73,6 +89,39 @@ func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
 		IDNameOptions []IDNameOption
 	}{
 		IDNameOptions: idNameOptions,
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	// ...
+
+}
+func GetMODENameOptions(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	modeNameValue := q.Get("modeName")
+	if modeNameValue == "" {
+		modeNameValue = "1"
+	}
+	modeNameOptions := []MODENameOption{
+		{Value: 1, Mode: "status", ModeName: "Статус ЛС", SelectedValue: convertToInt(modeNameValue)},
+		{Value: 2, Mode: "changes", ModeName: "Изменения ЛС", SelectedValue: convertToInt(modeNameValue)},
+	}
+	selectedMode := findModeByValue(modeNameOptions, convertToInt(modeNameValue))
+	fmt.Println(selectedMode)
+
+	tmpl, err := template.ParseFiles("modeNameOptions.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data := struct {
+		MODENameOptions []MODENameOption
+	}{
+		MODENameOptions: modeNameOptions,
 	}
 
 	err = tmpl.Execute(w, data)
@@ -156,8 +205,11 @@ func main() {
 	   	}
 	*/
 	//http.HandleFunc("/", h1)
+
 	http.HandleFunc("/", handleTests)
 	http.HandleFunc("/add-test/", handleAddTest)
-	http.HandleFunc("/get-id-name-options", GetIDNameOptions) // GetIDNameOptions
+	http.HandleFunc("/get-id-name-options", GetIDNameOptions)     // GetIDNameOptions
+	http.HandleFunc("/get-mode-name-options", GetMODENameOptions) // GetIDNameOptions
+
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }

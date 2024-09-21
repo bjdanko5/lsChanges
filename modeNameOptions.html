@@ -1,0 +1,6 @@
+{{ range .MODENameOptions }}
+{{ if eq .Value  .SelectedValue }}
+<input type="text" name="mode" id="test-mode" hx-swap-oob="true" class="form-control" value=" {{.Mode }}" readonly/>
+{{ end }}
+    <option value="{{ .Value }}" data-mode="{{ .Mode }}" {{ if eq .Value  .SelectedValue }}selected{{ end }}>{{ .ModeName }}</option>
+{{ end }}

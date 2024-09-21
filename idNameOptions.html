@@ -1,4 +1,6 @@
-{{.}}
 {{ range .IDNameOptions }}
+{{ if eq .Value  .SelectedValue }}
+<input type="text" name="id" id="test-id" hx-swap-oob="true" class="form-control" value=" {{ .Id }}" readonly/>
+{{ end }}
     <option value="{{ .Value }}" data-id="{{ .Id }}" {{ if eq .Value  .SelectedValue }}selected{{ end }}>{{ .IdName }}</option>
 {{ end }}

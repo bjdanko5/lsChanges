@@ -43,33 +43,32 @@
             <h1 class="mb-4">Добавить Тест</h1>
             <form hx-post="/add-test/" hx-target="#test-list" hx-swap="afterbegin" hx-indicator="#spinner">
                 <div class="mb-2">
-                    <label for="test-id">Получатель отчета(id)</label>
+                    <label for="test-id">Код Получатель отчета(id)</label>
                     <input type="text" name="id" id="test-id" class="form-control" value="{{ .ID }}"/>
                 </div>
                 <div class="mb-2">
                     <label for="test-idName">Наименование ПолучателяОтчета(idName)</label>
                   <select name="idName" id="test-idName" class="form-control" hx-target="#test-idName" hx-get="/get-id-name-options" hx-trigger="load, change" hx-swap="innerHTML"  >        
-                        {{ range .IDNameOptions }}
-                        <option value="{{ .Value }}" data-id="{{ .Id }}">{{ .IdName }}</option>
-                        {{ end }}
                     </select>
                 </div>
                 <div class="mb-2">
-                    <label for="test-modeName">Наименование режима(modeName)</label>
-                    <input type="text" name="modeName" id="test-modeName" class="form-control" />
+                    <label for="test-mode">Режим (mode)</label>
+                    <input type="text" name="mode" id="test-mode" class="form-control" />
                 </div>
                 <div class="mb-2">
-                    <label for="test-base">Код базы (base)</label>
+                    <label for="test-modeName">Наименование режима(modeName)</label>
+                    <select name="modeName" id="test-modeName" class="form-control" hx-target="#test-modeName" hx-get="/get-mode-name-options" hx-trigger="load, change" hx-swap="innerHTML"  >        
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="test-base">Код База (base)</label>
                     <input type="text" name="base" id="test-base" class="form-control" />
                 </div>
                 <div class="mb-2">
                     <label for="test-dt">Дата изменений (dt)</label>
                     <input type="text" name="dt" id="test-dt" class="form-control" />
                 </div>
-                <div class="mb-2">
-                    <label for="test-mode">Режим (mode)</label>
-                    <input type="text" name="mode" id="test-mode" class="form-control" />
-                </div>
+ 
                 <div class="mb-2">
                     <label for="test-start">Лс (начальная позиция) (start)</label>
                     <input type="text" name="start" id="test-start" class="form-control" />
