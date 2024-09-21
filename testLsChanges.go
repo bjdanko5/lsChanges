@@ -106,8 +106,10 @@ func GetMODENameOptions(w http.ResponseWriter, r *http.Request) {
 		modeNameValue = "1"
 	}
 	modeNameOptions := []MODENameOption{
-		{Value: 1, Mode: "status", ModeName: "Статус ЛС", SelectedValue: convertToInt(modeNameValue)},
+		{Value: 1, Mode: "status", ModeName: "Статус изменений ЛС", SelectedValue: convertToInt(modeNameValue)},
 		{Value: 2, Mode: "changes", ModeName: "Изменения ЛС", SelectedValue: convertToInt(modeNameValue)},
+		{Value: 3, Mode: "status_pay", ModeName: "Статус оплат ЛС", SelectedValue: convertToInt(modeNameValue)},
+		{Value: 4, Mode: "changes_pay", ModeName: "Оплаты ЛС", SelectedValue: convertToInt(modeNameValue)},
 	}
 	selectedMode := findModeByValue(modeNameOptions, convertToInt(modeNameValue))
 	fmt.Println(selectedMode)
