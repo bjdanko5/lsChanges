@@ -12,10 +12,6 @@ import (
 	"rsc.io/quote"
 )
 
-type Film struct {
-	Title    string
-	Director string
-}
 type Tests struct {
 	IdName   string
 	ModeName string
@@ -173,8 +169,10 @@ func main() {
 		log.Print("HTMX request recieved")
 		log.Print(r.Header.Get("HX-Request"))
 
-		idName := r.PostFormValue("idName")
-		modeName := r.PostFormValue("modeName")
+		//idName := r.PostFormValue("idName")
+		idNameText := r.PostFormValue("idNameText")
+		//modeName := r.PostFormValue("modeName")
+		modeText := r.PostFormValue("modeText")
 		id := r.PostFormValue("id")
 		base := r.PostFormValue("base")
 		dt := r.PostFormValue("dt")
@@ -187,7 +185,7 @@ func main() {
 
 		htmlStr := "<li class='list-group-item bg-primary text-white'>" +
 			fmt.Sprintf("<h3>%s - %s</h3>"+
-				"<a class='text-white' href='%s'>%s </a>", idName, modeName, fullUrl, fullUrl) +
+				"<a class='text-white' href='%s'>%s </a>", idNameText, modeText, fullUrl, fullUrl) +
 			"</li>"
 		tmpl, _ := template.New("t").Parse(htmlStr)
 		tmpl.Execute(w, nil)

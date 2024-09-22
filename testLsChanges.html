@@ -43,20 +43,29 @@
             <h1 class="mb-4">Добавить Тест</h1>
             <form hx-post="/add-test/" hx-target="#test-list" hx-swap="afterbegin" hx-indicator="#spinner">
                 <div class="mb-2">
-                    <label for="test-id">Код Получатель отчета(id)</label>
-                    <input type="text" name="id" id="test-id" class="form-control" value="{{ .ID }}"/>
+                    <label for="test-id" readonly hidden>Код Получатель отчета(id)</label>
+                    <input type="text" name="id" id="test-id" class="form-control" readonly hidden/>
                 </div>
                 <div class="mb-2">
-                    <label for="test-idName">Наименование ПолучателяОтчета(idName)</label>
-                  <select name="idName" id="test-idName" class="form-control" hx-target="#test-idName" hx-get="/get-id-name-options" hx-trigger="load, change" hx-swap="innerHTML"  >        
+                    <label for="test-idNameText"readonly hidden>Текст Получатель отчета(idNameText) readonly hidden</label>
+                    <input type="text" name="idNameText" id="test-idNameText" class="form-control" readonly hidden/>
+                </div>
+                <div class="mb-2">
+                    <label for="test-idName">Наименование ПолучателяОтчета(idName) </label>
+                  <select name="idName" id="test-idName" class="form-control" hx-target="#test-idName" hx-get="/get-id-name-options" hx-trigger="load, change" hx-swap="innerHTML">        
                     </select>
                 </div>
                 <div class="mb-2">
-                    <label for="test-mode">Режим (mode)</label>
-                    <input type="text" name="mode" id="test-mode" class="form-control" />
+                    <label for="test-mode" readonly hidden>Режим (mode)</label>
+                    <input type="text" name="mode" id="test-mode" class="form-control"  readonly hidden/>
                 </div>
                 <div class="mb-2">
-                    <label for="test-modeName">Наименование режима(modeName)</label>
+                    <label for="test-modeText" readonly hidden>Текст Режим (mode) </label>
+                    <input type="text" name="modeText" id="test-modeText" class="form-control"  readonly hidden/>
+                </div>
+
+                <div class="mb-2">
+                    <label for="test-modeName ">Наименование режима(modeName) </label>
                     <select name="modeName" id="test-modeName" class="form-control" hx-target="#test-modeName" hx-get="/get-mode-name-options" hx-trigger="load, change" hx-swap="innerHTML"  >        
                     </select>
                 </div>
