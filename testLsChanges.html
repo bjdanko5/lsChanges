@@ -40,7 +40,7 @@
         </div>
 
         <div class="col-4">
-            <h1 class="mb-4">Добавить Тест</h1>
+            <h1 class="mb-4">Новый Тест</h1>
             <form hx-post="/add-test/" hx-target="#test-list" hx-swap="afterbegin" hx-indicator="#spinner">
                 <div class="mb-2">
                     <label for="test-id" readonly hidden>Код Получатель отчета(id)</label>
@@ -48,12 +48,12 @@
                 </div>
                 
                 <div class="mb-2">
-                    <label for="test-idNameText"readonly hidden>Текст Получатель отчета(idNameText) readonly hidden</label>
+                    <label for="test-idNameText" readonly hidden>Текст Получатель отчета(idNameText) </label>
                     <input type="text" name="idNameText" id="test-idNameText" class="form-control" readonly hidden/>
                 </div>
 
                 <div class="mb-2">
-                    <label for="test-idName">Наименование ПолучателяОтчета(idName) </label>
+                    <label for="test-idName" >Наименование ПолучателяОтчета(idName) </label>
                   <select name="idName" id="test-idName" class="form-select" hx-target="#test-idName" hx-get="/get-id-name-options" hx-trigger="load, change" hx-swap="innerHTML">        
                     </select>
                 </div>
@@ -67,13 +67,22 @@
                 </div>
 
                 <div class="mb-2">
-                    <label for="test-modeName ">Наименование режима(modeName) </label>
+                    <label for="test-modeName" >Наименование режима(modeName) </label>
                     <select name="modeName" id="test-modeName" class="form-select" hx-target="#test-modeName" hx-get="/get-mode-name-options" hx-trigger="load, change" hx-swap="innerHTML"  >        
                     </select>
                 </div>
                 <div class="mb-2">
-                    <label for="test-base">Код База (base)</label>
-                    <input type="text" name="base" size="2" id="test-base" class="form-control" />
+                    <label for="test-base"  readonly hidden>Код База (base)</label>
+                    <input type="text" name="base" size="2" id="test-base" class="form-control"  readonly hidden/>
+                </div>
+                <div class="mb-2">
+                    <label for="test-baseText"  readonly hidden >Текст База (base) </label>
+                    <input type="text" name="baseText" id="test-baseText" class="form-control"  readonly hidden />
+                </div>
+                <div class="mb-2">
+                    <label for="test-modeName ">Наименование База(baseName) </label>
+                    <select name="baseName" id="test-baseName" class="form-select" hx-target="#test-baseName" hx-get="/get-base-name-options" hx-trigger="load, change" hx-swap="innerHTML"  >        
+                    </select>
                 </div>
                 <div class="mb-2">
                     <label for="test-dt">Дата изменений (dt)</label>
@@ -91,7 +100,7 @@
                 <button type="submit" class="btn btn-primary">
                     <span class="spinner-border spinner-border-sm htmx-indicator" id="spinner" role="status"
                         aria-hidden="true"></span>
-                    Submit
+                    Добавить
                 </button>
             </form>
         </div>

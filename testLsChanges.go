@@ -35,6 +35,12 @@ type MODENameOption struct {
 	ModeName      string
 	SelectedValue int
 }
+type BASENameOption struct {
+	Value         int
+	Base          string
+	BaseName      string
+	SelectedValue int
+}
 
 func findIdByValue(options []IDNameOption, value int) string {
 	for _, option := range options {
@@ -52,6 +58,15 @@ func findModeByValue(options []MODENameOption, value int) string {
 	}
 	return ""
 }
+func findBaseByValue(options []BASENameOption, value int) string {
+	for _, option := range options {
+		if option.Value == value {
+			return option.Base
+		}
+	}
+	return ""
+}
+
 func convertToInt(idNameValue interface{}) int {
 	if idNameValue == nil || idNameValue == "" {
 		return 0
@@ -61,6 +76,17 @@ func convertToInt(idNameValue interface{}) int {
 		return 0
 	}
 	return id
+}
+func convertDate(dt string) (string, error) {
+	//if layout == "DD.MM.YYYY" {
+	//	dt = strings.Split(dt, "-")[2] + "-" + strings.Split(dt, "-")[1] + "-" + strings.Split(dt, "-")[0] */
+	//}
+	layout := "2006-01-02"
+	t, err := time.Parse(layout, dt)
+	if err != nil {
+		return "", err
+	}
+	return t.Format("02.01.2006"), nil
 }
 func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
@@ -127,6 +153,36 @@ func GetMODENameOptions(w http.ResponseWriter, r *http.Request) {
 	// ...
 
 }
+func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	baseNameValue := q.Get("baseName")
+	if baseNameValue == "" {
+		baseNameValue = "1"
+	}
+	baseNameOptions := []BASENameOption{
+		{Value: 1, Base: "04", BaseName: "г.Азов", SelectedValue: convertToInt(baseNameValue)},
+	}
+	selectedBase := findBaseByValue(baseNameOptions, convertToInt(baseNameValue))
+	fmt.Println(selectedBase)
+
+	tmpl, err := template.ParseFiles("baseNameOptions.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data := struct {
+		BASENameOptions []BASENameOption
+	}{
+		BASENameOptions: baseNameOptions,
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+}
 
 func constructUrl(r *http.Request, params string) string {
 	//lsChangesScriptName := "lsChanges"
@@ -171,6 +227,13 @@ func main() {
 		id := r.PostFormValue("id")
 		base := r.PostFormValue("base")
 		dt := r.PostFormValue("dt")
+		newDt, err := convertDate(dt)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			dt = newDt
+		}
+
 		mode := r.PostFormValue("mode")
 		start := r.PostFormValue("start")
 		end := r.PostFormValue("end")
@@ -190,7 +253,8 @@ func main() {
 	http.HandleFunc("/", handleTests)
 	http.HandleFunc("/add-test/", handleAddTest)
 	http.HandleFunc("/get-id-name-options", GetIDNameOptions)     // GetIDNameOptions
-	http.HandleFunc("/get-mode-name-options", GetMODENameOptions) // GetIDNameOptions
+	http.HandleFunc("/get-mode-name-options", GetMODENameOptions) // GetMODENameOptions
+	http.HandleFunc("/get-base-name-options", GetBASENameOptions) // GetBASENameOptions
 
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }

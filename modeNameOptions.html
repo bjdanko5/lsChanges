@@ -1,7 +1,7 @@
 {{ range .MODENameOptions }}
 {{ if eq .Value  .SelectedValue }}
-<input type="text" name="mode" id="test-mode" hx-swap-oob="true" class="form-control" value=" {{.Mode }}" readonly hidden/>
-<input type="text" name="modeText" id="test-modeText" hx-swap-oob="true" class="form-control" value=" {{.ModeName }}" readonly hidden/>
+<input type="text" name="mode" id="test-mode" hx-swap-oob="true" class="form-control" value="{{.Mode }}" readonly hidden/>
+<input type="text" name="modeText" id="test-modeText" hx-swap-oob="true" class="form-control" value="{{.ModeName }}" readonly hidden/>
 {{ end }}
     <option value="{{ .Value }}" data-mode="{{ .Mode }}" {{ if eq .Value  .SelectedValue }}selected{{ end }}>{{ .ModeName }}</option>
 {{ end }}
