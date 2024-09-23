@@ -229,7 +229,7 @@ func main() {
 	}
 
 	handleAddTest := func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(1 * time.Second)
+		time.Sleep(500 * time.Millisecond)
 		log.Print("HTMX request recieved in handleAddTest")
 		log.Print(r.Header.Get("HX-Request"))
 
