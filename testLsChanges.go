@@ -236,14 +236,21 @@ func main() {
 
 		mode := r.PostFormValue("mode")
 		start := r.PostFormValue("start")
+		if start == "" {
+			start = "1"
+		}
 		end := r.PostFormValue("end")
+		if end == "" {
+			end = "1"
+		}
+
 		params := fmt.Sprintf("id=%s&base=%s&dt=%s&mode=%s&start=%s&end=%s",
 			id, base, dt, mode, start, end)
 		fullUrl := constructUrl(r, params)
 
 		htmlStr := "<li class='list-group-item bg-primary text-white'>" +
 			fmt.Sprintf("<h3>%s - %s</h3>"+
-				"<a class='text-white' href='%s'>%s </a>", idNameText, modeText, fullUrl, fullUrl) +
+				"<a class='text-warning' href='%s'>%s </a>", idNameText, modeText, fullUrl, fullUrl) +
 			"</li>"
 		tmpl, _ := template.New("t").Parse(htmlStr)
 		tmpl.Execute(w, nil)

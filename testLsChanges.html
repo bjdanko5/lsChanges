@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="mb-2">
-                    <label for="test-idName" >Наименование ПолучателяОтчета(idName) </label>
+                    <label for="test-idName" >Получатель Отчета </label>
                   <select name="idName" id="test-idName" class="form-select" hx-target="#test-idName" hx-get="/get-id-name-options" hx-trigger="load, change" hx-swap="innerHTML">        
                     </select>
                 </div>
@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="mb-2">
-                    <label for="test-modeName" >Наименование режима(modeName) </label>
+                    <label for="test-modeName" >Режим </label>
                     <select name="modeName" id="test-modeName" class="form-select" hx-target="#test-modeName" hx-get="/get-mode-name-options" hx-trigger="load, change" hx-swap="innerHTML"  >        
                     </select>
                 </div>
@@ -80,21 +80,21 @@
                     <input type="text" name="baseText" id="test-baseText" class="form-control"  readonly hidden />
                 </div>
                 <div class="mb-2">
-                    <label for="test-modeName ">Наименование База(baseName) </label>
+                    <label for="test-modeName ">База </label>
                     <select name="baseName" id="test-baseName" class="form-select" hx-target="#test-baseName" hx-get="/get-base-name-options" hx-trigger="load, change" hx-swap="innerHTML"  >        
                     </select>
                 </div>
                 <div class="mb-2">
-                    <label for="test-dt">Дата изменений (dt)</label>
+                    <label for="test-dt">Дата изменений</label>
                     <input type="date" name="dt" id="test-dt" class="form-control" />
                 </div>
  
                 <div class="mb-2">
-                    <label for="test-start">Лс (начальная позиция) (start)</label>
+                    <label for="test-start">Начальная позиция в списке ЛС</label>
                     <input type="number" min="1" size="4" name="start" id="test-start" class="form-control" style="display: inline-block;width: auto;"/>
                 </div>
                 <div class="mb-2">
-                    <label for="test-end">Лс (конечная позиция) (end)</label>
+                    <label for="test-end">Конечная позиция в списке ЛС </label>
                     <input type="number" min="1" size="4" name="end" id="test-end" class="form-control"  style="display: inline-block;width: auto;"/>
                 </div>
                 <button type="submit" class="btn btn-primary">
