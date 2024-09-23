@@ -231,7 +231,6 @@ func main() {
 		time.Sleep(500 * time.Millisecond)
 		log.Print("HTMX request recieved in handleAddTest")
 		log.Print(r.Header.Get("HX-Request"))
-
 		//idName := r.PostFormValue("idName")
 		idNameText := r.PostFormValue("idNameText")
 		//modeName := r.PostFormValue("modeName")
