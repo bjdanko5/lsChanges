@@ -29,14 +29,6 @@
                 {{ end }}
                 {{ end }}
             </ul>
-
-            <ul class="list-group fs-5 me-5" id="film-list">
-                {{ range .Films }}
-                {{ block "film-list-element" .}}
-                <li class="list-group-item bg-primary text-white">{{ .Title }} - {{ .Director }}</li>
-                {{ end }}
-                {{ end }}
-            </ul>
         </div>
 
         <div class="col-4">
@@ -86,7 +78,7 @@
                 </div>
                 <div class="mb-2">
                     <label for="test-dt">Дата изменений</label>
-                    <input type="date" name="dt" id="test-dt" class="form-control" />
+                    <input value='{{.CurrentDate}}' type="date" name="dt" id="test-dt" class="form-control" />
                 </div>
  
                 <div class="mb-2">

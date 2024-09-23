@@ -213,6 +213,16 @@ func main() {
 
 		}
 		tmpl.Execute(w, tests)
+
+		currentDate := time.Now().Format("02.01.2006")
+		data := struct {
+			CurrentDate string
+		}{
+			CurrentDate: currentDate,
+		}
+
+		tmpl.Execute(w, data)
+
 	}
 
 	handleAddTest := func(w http.ResponseWriter, r *http.Request) {
