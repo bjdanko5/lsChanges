@@ -227,6 +227,7 @@ func main() {
 		tmpl.Execute(w, data)
 
 	}
+
 	handleAddTest := func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(500 * time.Millisecond)
 		log.Print("HTMX request recieved in handleAddTest")
