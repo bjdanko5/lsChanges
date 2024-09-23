@@ -212,13 +212,16 @@ func main() {
 			tests["Tests"][i].FullUrl = constructUrl(r, params)
 
 		}
-		tmpl.Execute(w, tests)
+		//tmpl.Execute(w, tests)
 
-		currentDate := time.Now().Format("02.01.2006")
-		data := struct {
+		currentDate := time.Now().Format("2006-01-02")
+		type Data struct {
 			CurrentDate string
-		}{
+			Tests       []Tests
+		}
+		data := Data{
 			CurrentDate: currentDate,
+			Tests:       tests["Tests"],
 		}
 
 		tmpl.Execute(w, data)
