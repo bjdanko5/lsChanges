@@ -91,9 +91,6 @@ func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-
-	// ...
-
 }
 func GetMODENameOptions(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
@@ -160,13 +157,11 @@ func main() {
 
 		}
 		tmpl.Execute(w, tests)
-		/* 	io.WriteString(w, "Hello, World!")
-		io.WriteString(w, r.Method) */
 	}
 
 	handleAddTest := func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(1 * time.Second)
-		log.Print("HTMX request recieved")
+		log.Print("HTMX request recieved in handleAddTest")
 		log.Print(r.Header.Get("HX-Request"))
 
 		//idName := r.PostFormValue("idName")
@@ -191,20 +186,6 @@ func main() {
 		tmpl.Execute(w, nil)
 
 	}
-
-	/* 	h2 := func(w http.ResponseWriter, r *http.Request) {
-	   		time.Sleep(1 * time.Second)
-	   		log.Print("HTMX request recieved")
-	   		log.Print(r.Header.Get("HX-Request"))
-	   		title := r.PostFormValue("title")
-	   		director := r.PostFormValue("director")
-	   		htmlStr := fmt.Sprintf("<li class='list-group-item bg-primary text-white'>%s - %s</li>", title, director)
-	   		tmpl, _ := template.New("t").Parse(htmlStr)
-	   		tmpl.Execute(w, nil)
-
-	   	}
-	*/
-	//http.HandleFunc("/", h1)
 
 	http.HandleFunc("/", handleTests)
 	http.HandleFunc("/add-test/", handleAddTest)
