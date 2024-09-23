@@ -1,6 +1,6 @@
 sudo systemctl  stop lsChanges
-sudo cd /var/www/html/lsChanges
-sudo go build -o lsChanges
+cd /var/www/html/lsChanges
+go build -o lsChanges
 sudo cp -f /var/www/html/lsChanges/lsChanges.service /etc/systemd/system/lsChanges.service
 sudo useradd -s /sbin/nologin -M lsChanges 
 sudo mkdir -p /opt/lsChanges/
