@@ -179,7 +179,7 @@ func GetParamAsInt(r *http.Request, name string) (int, error) {
 	return paramAsInt, nil
 }
 func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
-	_, selectedValue := GetParamAsInt(r, "baseName")
+	selectedValue, _ := GetParamAsInt(r, "baseName")
 	options := []interface{}{
 		BASENameOption{
 			Value:         1,
