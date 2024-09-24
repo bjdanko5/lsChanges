@@ -95,7 +95,7 @@ func main() {
 		log.Print("HTMX request recieved in handleAddTest")
 		log.Print(r.Header.Get("HX-Request"))
 		//idName := r.PostFormValue("idName")
-		idNameText := r.PostFormValue("idNameText")
+		idText := r.PostFormValue("idText")
 		//modeName := r.PostFormValue("modeName")
 		modeText := r.PostFormValue("modeText")
 		id := r.PostFormValue("id")
@@ -124,7 +124,7 @@ func main() {
 
 		htmlStr := "<li class='list-group-item bg-primary text-white'>" +
 			fmt.Sprintf("<h3>%s - %s</h3>"+
-				"<a class='text-warning' href='%s'>%s </a>", idNameText, modeText, fullUrl, fullUrl) +
+				"<a class='text-warning' href='%s'>%s </a>", idText, modeText, fullUrl, fullUrl) +
 			"</li>"
 		tmpl, _ := template.New("t").Parse(htmlStr)
 		tmpl.Execute(w, nil)

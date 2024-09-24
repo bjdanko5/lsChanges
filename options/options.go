@@ -41,7 +41,8 @@ type SelectDataForTemplate struct {
 	Options        []interface{}
 	SelectedOption interface{}
 }
-
+type Option interface {
+}
 type IDNameOption struct {
 	Value         int
 	Id            string
@@ -124,7 +125,6 @@ func GetMODENameOptions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
-
 func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 	selectedValue, err := GetParamAsInt(r, "baseName")
 	if err != nil {
@@ -140,7 +140,8 @@ func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 
 	selectedOption := findOptionByValue(Data.Options, selectedValue)
 	if selectedOption != nil {
-		if option, ok := selectedOption.(BASENameOption); ok {
+		//	if option, ok := selectedOption.(BASENameOption); ok {
+		if option, ok := selectedOption.(Option); ok {
 			Data.SelectedOption = option
 		} else {
 			http.Error(w, "Invalid option type", http.StatusInternalServerError)
