@@ -180,31 +180,28 @@ func GetParamAsInt(r *http.Request, name string) (int, error) {
 }
 func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 	selectedValue, _ := GetParamAsInt(r, "baseName")
-	options := []interface{}{
-		BASENameOption{
-			Value:         1,
-			Base:          "04",
-			BaseName:      "г.Азов",
-			SelectedValue: selectedValue,
-		},
-		// добавьте другие элементы аналогичным образом
-	}
 	var Data struct {
-		BASENameOptions       []interface{}
+		Options               []interface{}
 		SelectedBaseNameValue int
 		SelectedBaseName      string
 		SelectedBase          string
 	}
-
-	selectedOption := findOptionByValue(options, selectedValue)
+	Data.Options = []interface{}{
+		BASENameOption{
+			Value:    1,
+			Base:     "04",
+			BaseName: "г.Азов",
+			//			SelectedValue: selectedValue,
+		},
+		// добавьте другие элементы аналогичным образом
+	}
+	selectedOption := findOptionByValue(Data.Options, selectedValue)
 	if option, ok := selectedOption.(BASENameOption); ok {
 		fmt.Println(option.BaseName)
-		Data.BASENameOptions = options
 		Data.SelectedBaseNameValue = option.Value
 		Data.SelectedBaseName = option.BaseName
 		Data.SelectedBase = option.Base
 	}
-	//fmt.Println(selectedOption.BaseName)
 
 	tmpl, err := template.ParseFiles("baseNameOptions.html")
 	if err != nil {
