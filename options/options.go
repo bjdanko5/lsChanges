@@ -2,7 +2,6 @@ package options
 
 import (
 	"html/template"
-	"log"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -11,11 +10,7 @@ import (
 var tmplOptions *template.Template
 
 func init() {
-	var err error
-	tmplOptions, err = template.ParseFiles("options/Options.html")
-	if err != nil {
-		log.Fatal(err)
-	}
+	tmplOptions = template.Must(template.ParseFiles("options/Options.html"))
 }
 
 func GetParamAsInt(r *http.Request, name string) (int, error) {
