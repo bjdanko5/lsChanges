@@ -80,7 +80,7 @@ func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
 
 	selectedOption := findOptionByValue(Data.Options, selectedValue)
 	if selectedOption != nil {
-		if option, ok := selectedOption.(IDNameOption); ok {
+		if option, ok := selectedOption.(Option); ok {
 			Data.SelectedOption = option
 		} else {
 			http.Error(w, "Invalid option type", http.StatusInternalServerError)
@@ -112,7 +112,7 @@ func GetMODENameOptions(w http.ResponseWriter, r *http.Request) {
 
 	selectedOption := findOptionByValue(Data.Options, selectedValue)
 	if selectedOption != nil {
-		if option, ok := selectedOption.(MODENameOption); ok {
+		if option, ok := selectedOption.(Option); ok {
 			Data.SelectedOption = option
 		} else {
 			http.Error(w, "Invalid option type", http.StatusInternalServerError)
