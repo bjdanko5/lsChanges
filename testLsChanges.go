@@ -24,6 +24,10 @@ type Tests struct {
 	End      string
 	FullUrl  string
 }
+type SelectDataForTemplate struct {
+	Options        []interface{}
+	SelectedOption interface{}
+}
 type IDNameOption struct {
 	Value         int
 	Id            string
@@ -178,18 +182,16 @@ func GetParamAsInt(r *http.Request, name string) (int, error) {
 	}
 	return paramAsInt, nil
 }
+
 func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 	selectedValue, _ := GetParamAsInt(r, "baseName")
-	var Data struct {
-		Options        []interface{}
-		SelectedOption interface{}
-	}
+
+	var Data SelectDataForTemplate
 	Data.Options = []interface{}{
 		BASENameOption{
 			Value:    1,
 			Base:     "04",
 			BaseName: "г.Азов",
-			//			SelectedValue: selectedValue,
 		},
 		// добавьте другие элементы аналогичным образом
 	}
