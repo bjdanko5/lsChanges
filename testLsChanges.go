@@ -165,47 +165,30 @@ func GetMODENameOptions(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	baseNameValue := q.Get("baseName")
-	if baseNameValue == "" {
-		baseNameValue = "1"
-	}
-	/*	baseNameOptions := []BASENameOption{
-			{Value: 1, Base: "04", BaseName: "г.Азов", SelectedValue: convertToInt(baseNameValue)},
-		}
-	*/
-	/* 	options := []interface{}{}
-	   	for _, option := range baseNameOptions {
-	   		options = append(options, option)
-	   	} */
-	/* 	options := []interface{}{
-	   		struct {
-	   			Value         int
-	   			Base          string
-	   			BaseName      string
-	   			SelectedValue int
-	   		}{
-	   			Value:         1,
-	   			Base:          "04",
-	   			BaseName:      "г.Азов",
-	   			SelectedValue: convertToInt(baseNameValue),
-	   		},
-	   		// добавьте другие элементы аналогичным образом
-	   	}
-	*/
-	options := []interface{}{
 
+func GetParamAsInt(r *http.Request, name string) (int, error) {
+	q := r.URL.Query()
+	value := q.Get(name)
+	if value == "" {
+		return 1, nil // or return an error, depending on your needs
+	}
+	paramAsInt, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, err
+	}
+	return paramAsInt, nil
+}
+func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
+	_, selectedValue := GetParamAsInt(r, "baseName")
+	options := []interface{}{
 		BASENameOption{
 			Value:         1,
 			Base:          "04",
 			BaseName:      "г.Азов",
-			SelectedValue: convertToInt(baseNameValue),
+			SelectedValue: selectedValue,
 		},
 		// добавьте другие элементы аналогичным образом
 	}
-
-	//selectedBase := findBaseByValue(baseNameOptions, convertToInt(baseNameValue))
 	var Data struct {
 		BASENameOptions       []interface{}
 		SelectedBaseNameValue int
@@ -213,11 +196,9 @@ func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 		SelectedBase          string
 	}
 
-	selectedOption := findOptionByValue(options, convertToInt(baseNameValue))
-	//option := selectedOption
+	selectedOption := findOptionByValue(options, selectedValue)
 	if option, ok := selectedOption.(BASENameOption); ok {
 		fmt.Println(option.BaseName)
-		//Data.BASENameOptions = baseNameOptions
 		Data.BASENameOptions = options
 		Data.SelectedBaseNameValue = option.Value
 		Data.SelectedBaseName = option.BaseName
