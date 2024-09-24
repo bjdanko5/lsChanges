@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -42,6 +43,17 @@ type BASENameOption struct {
 	SelectedValue int
 }
 
+func findOptionByValue(options []interface{}, value int) interface{} {
+	for _, option := range options {
+		field := reflect.ValueOf(option).FieldByName("Value")
+		if field.IsValid() {
+			if field.Kind() == reflect.Int && field.Int() == int64(value) {
+				return option
+			}
+		}
+	}
+	return nil
+}
 func findIdByValue(options []IDNameOption, value int) string {
 	for _, option := range options {
 		if option.Value == value {
@@ -58,15 +70,17 @@ func findModeByValue(options []MODENameOption, value int) string {
 	}
 	return ""
 }
-func findBaseByValue(options []BASENameOption, value int) string {
-	for _, option := range options {
-		if option.Value == value {
-			return option.Base
-		}
-	}
-	return ""
-}
 
+/*
+	 func findBaseByValue(options []BASENameOption, value int) string {
+		for _, option := range options {
+			if option.Value == value {
+				return option.Base
+			}
+		}
+		return ""
+	}
+*/
 func convertToInt(idNameValue interface{}) int {
 	if idNameValue == nil || idNameValue == "" {
 		return 0
@@ -150,8 +164,6 @@ func GetMODENameOptions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	// ...
-
 }
 func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
@@ -159,11 +171,59 @@ func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 	if baseNameValue == "" {
 		baseNameValue = "1"
 	}
-	baseNameOptions := []BASENameOption{
-		{Value: 1, Base: "04", BaseName: "г.Азов", SelectedValue: convertToInt(baseNameValue)},
+	/*	baseNameOptions := []BASENameOption{
+			{Value: 1, Base: "04", BaseName: "г.Азов", SelectedValue: convertToInt(baseNameValue)},
+		}
+	*/
+	/* 	options := []interface{}{}
+	   	for _, option := range baseNameOptions {
+	   		options = append(options, option)
+	   	} */
+	/* 	options := []interface{}{
+	   		struct {
+	   			Value         int
+	   			Base          string
+	   			BaseName      string
+	   			SelectedValue int
+	   		}{
+	   			Value:         1,
+	   			Base:          "04",
+	   			BaseName:      "г.Азов",
+	   			SelectedValue: convertToInt(baseNameValue),
+	   		},
+	   		// добавьте другие элементы аналогичным образом
+	   	}
+	*/
+	options := []interface{}{
+
+		BASENameOption{
+			Value:         1,
+			Base:          "04",
+			BaseName:      "г.Азов",
+			SelectedValue: convertToInt(baseNameValue),
+		},
+		// добавьте другие элементы аналогичным образом
 	}
-	selectedBase := findBaseByValue(baseNameOptions, convertToInt(baseNameValue))
-	fmt.Println(selectedBase)
+
+	//selectedBase := findBaseByValue(baseNameOptions, convertToInt(baseNameValue))
+	var Data struct {
+		BASENameOptions       []interface{}
+		SelectedBaseNameValue int
+		SelectedBaseName      string
+		SelectedBase          string
+	}
+
+	selectedOption := findOptionByValue(options, convertToInt(baseNameValue))
+	//option := selectedOption
+	if option, ok := selectedOption.(BASENameOption); ok {
+		fmt.Println(option.BaseName)
+		//Data.BASENameOptions = baseNameOptions
+		Data.BASENameOptions = options
+		Data.SelectedBaseNameValue = option.Value
+		Data.SelectedBaseName = option.BaseName
+		Data.SelectedBase = option.Base
+	}
+	//fmt.Println(selectedOption.BaseName)
 
 	tmpl, err := template.ParseFiles("baseNameOptions.html")
 	if err != nil {
@@ -171,13 +231,7 @@ func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := struct {
-		BASENameOptions []BASENameOption
-	}{
-		BASENameOptions: baseNameOptions,
-	}
-
-	err = tmpl.Execute(w, data)
+	err = tmpl.Execute(w, Data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
