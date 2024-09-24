@@ -182,6 +182,7 @@ func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 	selectedValue, _ := GetParamAsInt(r, "baseName")
 	var Data struct {
 		Options               []interface{}
+		SelectedOption        interface{}
 		SelectedBaseNameValue int
 		SelectedBaseName      string
 		SelectedBase          string
@@ -198,6 +199,7 @@ func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
 	selectedOption := findOptionByValue(Data.Options, selectedValue)
 	if option, ok := selectedOption.(BASENameOption); ok {
 		fmt.Println(option.BaseName)
+		Data.SelectedOption = option
 		Data.SelectedBaseNameValue = option.Value
 		Data.SelectedBaseName = option.BaseName
 		Data.SelectedBase = option.Base
