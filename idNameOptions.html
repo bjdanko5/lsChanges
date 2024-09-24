@@ -1,7 +1,0 @@
-{{ range .IDNameOptions }}
-{{ if eq .Value  .SelectedValue }}
-<input type="text" name="id" id="test-id" hx-swap-oob="true" class="form-control" value="{{ .Id }}" readonly hidden/>
-<input type="text" name="idNameText" id="test-idNameText" hx-swap-oob="true" class="form-control" value=" {{ .IdName }}" readonly hidden/>
-{{ end }}
-    <option value="{{ .Value }}" data-id="{{ .Id }}" {{ if eq .Value  .SelectedValue }}selected{{ end }}>{{ .IdName }}</option>
-{{ end }}

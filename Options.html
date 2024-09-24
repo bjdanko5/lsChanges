@@ -1,0 +1,25 @@
+{{ define "baseNameOptions" }}
+    <input type="text" name="base" id="test-base" hx-swap-oob="true" class="form-control" value="{{.SelectedOption.Base }}" readonly hidden/>
+    <input type="text" name="baseText" id="test-baseText" hx-swap-oob="true" class="form-control" value="{{.SelectedOption.BaseName }}" readonly hidden/>
+    {{ range .Options }}
+        <option value="{{ .Value }}" data-mode="{{ .Base }}" {{ if eq .Value $.SelectedOption.Value }}selected{{ end }}>{{ .BaseName }}</option>
+    {{ end }}
+{{ end }}
+
+{{ define "modeNameOptions" }}
+    <input type="text" name="mode" id="test-mode" hx-swap-oob="true" class="form-control" value="{{.SelectedOption.Mode }}" readonly hidden/>
+    <input type="text" name="modeText" id="test-modeText" hx-swap-oob="true" class="form-control" value="{{.SelectedOption.ModeName }}" readonly hidden/>
+    {{ range .Options }}
+        <option value="{{ .Value }}" data-mode="{{ .Mode }}" {{ if eq .Value $.SelectedOption.Value }}selected{{ end }}>{{ .ModeName }}</option>
+    {{ end }}
+
+{{ end }}
+
+{{ define "idNameOptions" }}
+    <input type="text" name="id" id="test-id" hx-swap-oob="true" class="form-control" value="{{.SelectedOption.Id }}" readonly hidden/>
+    <input type="text" name="idText" id="test-idText" hx-swap-oob="true" class="form-control" value="{{.SelectedOption.IdName }}" readonly hidden/>
+    {{ range .Options }}
+        <option value="{{ .Value }}" data-id="{{ .Id }}" {{ if eq .Value $.SelectedOption.Value }}selected{{ end }}>{{ .IdName }}</option>
+    {{ end }}
+
+{{ end }}

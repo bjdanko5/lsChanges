@@ -47,6 +47,27 @@ type BASENameOption struct {
 	SelectedValue int
 }
 
+var tmplOptions *template.Template
+
+func init() {
+	var err error
+	tmplOptions, err = template.ParseFiles("Options.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+func GetParamAsInt(r *http.Request, name string) (int, error) {
+	q := r.URL.Query()
+	value := q.Get(name)
+	if value == "" {
+		return 1, nil // or return an error, depending on your needs
+	}
+	paramAsInt, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, err
+	}
+	return paramAsInt, nil
+}
 func findOptionByValue(options []interface{}, value int) interface{} {
 	for _, option := range options {
 		field := reflect.ValueOf(option).FieldByName("Value")
@@ -66,25 +87,7 @@ func findIdByValue(options []IDNameOption, value int) string {
 	}
 	return ""
 }
-func findModeByValue(options []MODENameOption, value int) string {
-	for _, option := range options {
-		if option.Value == value {
-			return option.Mode
-		}
-	}
-	return ""
-}
 
-/*
-	 func findBaseByValue(options []BASENameOption, value int) string {
-		for _, option := range options {
-			if option.Value == value {
-				return option.Base
-			}
-		}
-		return ""
-	}
-*/
 func convertToInt(idNameValue interface{}) int {
 	if idNameValue == nil || idNameValue == "" {
 		return 0
@@ -106,112 +109,128 @@ func convertDate(dt string) (string, error) {
 	}
 	return t.Format("02.01.2006"), nil
 }
+
+/*
+	func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		idNameValue := q.Get("idName")
+		if idNameValue == "" {
+			idNameValue = "1"
+		}
+		idNameOptions := []IDNameOption{
+			{Value: 1, Id: "201000003125", IdName: "Экоград Азов", SelectedValue: convertToInt(idNameValue)},
+			{Value: 2, Id: "201000003592", IdName: "Экоград Новочеркасск", SelectedValue: convertToInt(idNameValue)},
+		}
+		selectedId := findIdByValue(idNameOptions, convertToInt(idNameValue))
+		fmt.Println(selectedId)
+
+		tmpl, err := template.ParseFiles("idNameOptions.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		data := struct {
+			IDNameOptions []IDNameOption
+		}{
+			IDNameOptions: idNameOptions,
+		}
+
+		err = tmpl.Execute(w, data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
+*/
 func GetIDNameOptions(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	idNameValue := q.Get("idName")
-	if idNameValue == "" {
-		idNameValue = "1"
-	}
-	idNameOptions := []IDNameOption{
-		{Value: 1, Id: "201000003125", IdName: "Экоград Азов", SelectedValue: convertToInt(idNameValue)},
-		{Value: 2, Id: "201000003592", IdName: "Экоград Новочеркасск", SelectedValue: convertToInt(idNameValue)},
-	}
-	selectedId := findIdByValue(idNameOptions, convertToInt(idNameValue))
-	fmt.Println(selectedId)
-
-	tmpl, err := template.ParseFiles("idNameOptions.html")
+	selectedValue, err := GetParamAsInt(r, "idName")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	data := struct {
-		IDNameOptions []IDNameOption
-	}{
-		IDNameOptions: idNameOptions,
+	var Data SelectDataForTemplate
+
+	Data.Options = []interface{}{
+		IDNameOption{Value: 1, Id: "201000003125", IdName: "Экоград Азов"},
+		IDNameOption{Value: 2, Id: "201000003592", IdName: "Экоград Новочеркасск"},
 	}
 
-	err = tmpl.Execute(w, data)
+	selectedOption := findOptionByValue(Data.Options, selectedValue)
+	if selectedOption != nil {
+		if option, ok := selectedOption.(IDNameOption); ok {
+			Data.SelectedOption = option
+		} else {
+			http.Error(w, "Invalid option type", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	err = tmplOptions.ExecuteTemplate(w, "idNameOptions", Data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
+
 func GetMODENameOptions(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	modeNameValue := q.Get("modeName")
-	if modeNameValue == "" {
-		modeNameValue = "1"
-	}
-	modeNameOptions := []MODENameOption{
-		{Value: 1, Mode: "status", ModeName: "Статус изменений ЛС", SelectedValue: convertToInt(modeNameValue)},
-		{Value: 2, Mode: "changes", ModeName: "Изменения ЛС", SelectedValue: convertToInt(modeNameValue)},
-		{Value: 3, Mode: "status_pay", ModeName: "Статус оплат ЛС", SelectedValue: convertToInt(modeNameValue)},
-		{Value: 4, Mode: "changes_pay", ModeName: "Оплаты ЛС", SelectedValue: convertToInt(modeNameValue)},
-	}
-	selectedMode := findModeByValue(modeNameOptions, convertToInt(modeNameValue))
-	fmt.Println(selectedMode)
-
-	tmpl, err := template.ParseFiles("modeNameOptions.html")
+	selectedValue, err := GetParamAsInt(r, "modeName")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	data := struct {
-		MODENameOptions []MODENameOption
-	}{
-		MODENameOptions: modeNameOptions,
+	var Data SelectDataForTemplate
+
+	Data.Options = []interface{}{
+		MODENameOption{Value: 1, Mode: "status", ModeName: "Статус изменений ЛС"},
+		MODENameOption{Value: 2, Mode: "changes", ModeName: "Изменения ЛС"},
+		MODENameOption{Value: 3, Mode: "status_pay", ModeName: "Статус оплат ЛС"},
+		MODENameOption{Value: 4, Mode: "changes_pay", ModeName: "Оплаты ЛС"},
 	}
 
-	err = tmpl.Execute(w, data)
+	selectedOption := findOptionByValue(Data.Options, selectedValue)
+	if selectedOption != nil {
+		if option, ok := selectedOption.(MODENameOption); ok {
+			Data.SelectedOption = option
+		} else {
+			http.Error(w, "Invalid option type", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	err = tmplOptions.ExecuteTemplate(w, "modeNameOptions", Data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-
-}
-
-func GetParamAsInt(r *http.Request, name string) (int, error) {
-	q := r.URL.Query()
-	value := q.Get(name)
-	if value == "" {
-		return 1, nil // or return an error, depending on your needs
-	}
-	paramAsInt, err := strconv.Atoi(value)
-	if err != nil {
-		return 0, err
-	}
-	return paramAsInt, nil
 }
 
 func GetBASENameOptions(w http.ResponseWriter, r *http.Request) {
-	selectedValue, _ := GetParamAsInt(r, "baseName")
-
-	var Data SelectDataForTemplate
-	Data.Options = []interface{}{
-		BASENameOption{
-			Value:    1,
-			Base:     "04",
-			BaseName: "г.Азов",
-		},
-		// добавьте другие элементы аналогичным образом
-	}
-	selectedOption := findOptionByValue(Data.Options, selectedValue)
-	if option, ok := selectedOption.(BASENameOption); ok {
-		fmt.Println(option.BaseName)
-		Data.SelectedOption = option
-	}
-
-	tmpl, err := template.ParseFiles("baseNameOptions.html")
+	selectedValue, err := GetParamAsInt(r, "baseName")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = tmpl.Execute(w, Data)
+	var Data SelectDataForTemplate
+
+	Data.Options = []interface{}{
+		BASENameOption{Value: 1, Base: "04", BaseName: "г.Азов"},
+	}
+
+	selectedOption := findOptionByValue(Data.Options, selectedValue)
+	if selectedOption != nil {
+		if option, ok := selectedOption.(BASENameOption); ok {
+			Data.SelectedOption = option
+		} else {
+			http.Error(w, "Invalid option type", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	err = tmplOptions.ExecuteTemplate(w, "baseNameOptions", Data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-
 }
 
 func constructUrl(r *http.Request, params string) string {
