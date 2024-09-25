@@ -14,7 +14,7 @@ import (
 )
 
 var tmplTests *template.Template
-var tests []Test
+var tests TestsType
 
 func init() {
 	tmplTests = template.Must(template.ParseFiles("Tests.html"))
@@ -33,18 +33,7 @@ func init() {
 }
 
 // Убрать
-type Tests struct {
-	IdName   string
-	ModeName string
-	Id       string
-	Base     string
-	Dt       string
-	Mode     string
-	Start    string
-	End      string
-	FullUrl  string
-}
-
+type TestsType []Test
 type Test struct {
 	IdName   string
 	ModeName string
@@ -58,7 +47,7 @@ type Test struct {
 	Added    bool
 }
 type TestsDataForTemplate struct {
-	Tests []Test
+	Tests TestsType
 }
 
 func constructUrl(r *http.Request, params string) string {
@@ -67,7 +56,7 @@ func constructUrl(r *http.Request, params string) string {
 	return fullUrl
 }
 
-func GetТests(w http.ResponseWriter, r *http.Request) {
+func (t *TestsType) GetTests(w http.ResponseWriter, r *http.Request) {
 	for i, test := range tests {
 		params := fmt.Sprintf("id=%s&base=%s&dt=%s&mode=%s&start=%s&end=%s",
 			test.Id, test.Base, test.Dt, test.Mode, test.Start, test.End)
@@ -90,68 +79,70 @@ func convertDate(dt string) (string, error) {
 	return t.Format("02.01.2006"), nil
 }
 
+func AddTest(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(500 * time.Millisecond)
+	log.Print("HTMX request recieved in handleAddTest")
+	log.Print(r.Header.Get("HX-Request"))
+	//idName := r.PostFormValue("idName")
+	idText := r.PostFormValue("idText")
+	//modeName := r.PostFormValue("modeName")
+	modeText := r.PostFormValue("modeText")
+	id := r.PostFormValue("id")
+	base := r.PostFormValue("base")
+	dt := r.PostFormValue("dt")
+	newDt, err := convertDate(dt)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		dt = newDt
+	}
+
+	mode := r.PostFormValue("mode")
+	start := r.PostFormValue("start")
+	if start == "" {
+		start = "1"
+	}
+	end := r.PostFormValue("end")
+	if end == "" {
+		end = "1"
+	}
+	tests = append([]Test{Test{
+		IdName:   idText,
+		ModeName: modeText,
+		Id:       id,
+		Base:     base,
+		Dt:       dt,
+		Mode:     mode,
+		Start:    start,
+		End:      end,
+		FullUrl:  "",
+		Added:    true,
+	}}, tests...)
+
+	tests.GetTests(w, r)
+}
+func handleTestLsChanges(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("testLsChanges.html"))
+	currentDate := time.Now().Format("2006-01-02")
+	type Data struct {
+		CurrentDate string
+	}
+	data := Data{
+		CurrentDate: currentDate,
+	}
+	tmpl.Execute(w, data)
+}
+func handleGetТests(w http.ResponseWriter, r *http.Request) {
+
+	tests.GetTests(w, r)
+}
 func main() {
+
 	fmt.Println(quote.Go())
-	handleTestLsChanges := func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("testLsChanges.html"))
-		currentDate := time.Now().Format("2006-01-02")
-		type Data struct {
-			CurrentDate string
-		}
-		data := Data{
-			CurrentDate: currentDate,
-		}
-
-		tmpl.Execute(w, data)
-
-	}
-
-	handleAddTest := func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(500 * time.Millisecond)
-		log.Print("HTMX request recieved in handleAddTest")
-		log.Print(r.Header.Get("HX-Request"))
-		//idName := r.PostFormValue("idName")
-		idText := r.PostFormValue("idText")
-		//modeName := r.PostFormValue("modeName")
-		modeText := r.PostFormValue("modeText")
-		id := r.PostFormValue("id")
-		base := r.PostFormValue("base")
-		dt := r.PostFormValue("dt")
-		newDt, err := convertDate(dt)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			dt = newDt
-		}
-
-		mode := r.PostFormValue("mode")
-		start := r.PostFormValue("start")
-		if start == "" {
-			start = "1"
-		}
-		end := r.PostFormValue("end")
-		if end == "" {
-			end = "1"
-		}
-		tests = append([]Test{Test{
-			IdName:   idText,
-			ModeName: modeText,
-			Id:       id,
-			Base:     base,
-			Dt:       dt,
-			Mode:     mode,
-			Start:    start,
-			End:      end,
-			FullUrl:  "",
-			Added:    true,
-		}}, tests...)
-		GetТests(w, r)
-
-	}
 
 	http.HandleFunc("/", handleTestLsChanges)
-	http.HandleFunc("GET /tests", GetТests)
-	http.HandleFunc("POST /tests", handleAddTest)
+	http.HandleFunc("GET /tests", handleGetТests)
+	http.HandleFunc("POST /tests", AddTest)
 	http.HandleFunc("GET /get-id-name-options", options.GetIDNameOptions)
 	http.HandleFunc("GET /get-mode-name-options", options.GetMODENameOptions)
 	http.HandleFunc("GET /get-base-name-options", options.GetBASENameOptions)
