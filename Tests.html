@@ -1,13 +1,26 @@
-{{ define "tests" }}
+{{ define "tests1" }}
 
 
     {{ range .Tests }}
-        {{ block "test-list-element" .}}
+
         <li class="list-group-item bg-primary text-white">
         <h3>{{ .IdName }} - {{ .ModeName }}</h3>
                 <a class="{{if .Added}} text-warning{{else}} text-white{{end}}" href="{{ .FullUrl }}">{{ .FullUrl }} </a>
         </li>
-    {{ end }}
+
     {{ end }}
 
 {{ end }}
+{{ define "tests" }}
+{{ range .Tests }}
+
+<a href="{{ .FullUrl }}" class="list-group-item list-group-item-action" aria-current="true">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{ .IdName }} - {{ .ModeName }}</h5>
+      <small>{{if .Added}} Добавлен{{else}}Пример{{end}}</small>
+    </div>
+    <p class="mb-1 {{if .Added}} text-success{{else}} {{end}}">{{ .FullUrl }}</p>
+    <small>{{.Mode}}</small>
+  </a>
+  {{ end }}
+  {{ end }} 

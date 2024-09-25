@@ -48,8 +48,8 @@ type TestsType []Test
 type TestsDataForTemplate struct {
 	Tests TestsType
 }
-func (t *TestsType)Temlplate(w http.ResponseWriter, r *http.Request)
-{
+
+func (t *TestsType) Template(w http.ResponseWriter, r *http.Request) {
 	var Data TestsDataForTemplate
 	Data.Tests = *t
 	err := tmplTests.ExecuteTemplate(w, "tests", Data)
@@ -57,7 +57,7 @@ func (t *TestsType)Temlplate(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
-func (t *TestsType) GetTests {
+func (t *TestsType) GetTests(r *http.Request) {
 	for i, test := range *t {
 		params := fmt.Sprintf("id=%s&base=%s&dt=%s&mode=%s&start=%s&end=%s",
 			test.Id, test.Base, test.Dt, test.Mode, test.Start, test.End)
@@ -133,12 +133,13 @@ func handleTestLsChanges(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, data)
 }
 func handleGetTests(w http.ResponseWriter, r *http.Request) {
-	tests.GetTests()
+	tests.GetTests(r)
 	tests.Template(w, r)
 }
 func handleAddTest(w http.ResponseWriter, r *http.Request) {
 	time.Sleep(500 * time.Millisecond)
-	tests.AddTest()
+	tests.AddTest(w, r)
+	tests.GetTests(r)
 	tests.Template(w, r)
 }
 
