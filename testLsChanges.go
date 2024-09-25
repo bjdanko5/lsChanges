@@ -32,8 +32,6 @@ func init() {
 
 }
 
-// Убрать
-type TestsType []Test
 type Test struct {
 	IdName   string
 	ModeName string
@@ -46,41 +44,28 @@ type Test struct {
 	FullUrl  string
 	Added    bool
 }
+type TestsType []Test
 type TestsDataForTemplate struct {
 	Tests TestsType
 }
-
-func constructUrl(r *http.Request, params string) string {
-	//lsChangesScriptName := "lsChanges"
-	fullUrl := "http://" + strings.Split(r.Host, ":")[0] + "/lsChanges/lsChanges.php" + "?" + params
-	return fullUrl
-}
-
-func (t *TestsType) GetTests(w http.ResponseWriter, r *http.Request) {
-	for i, test := range tests {
-		params := fmt.Sprintf("id=%s&base=%s&dt=%s&mode=%s&start=%s&end=%s",
-			test.Id, test.Base, test.Dt, test.Mode, test.Start, test.End)
-		tests[i].FullUrl = constructUrl(r, params)
-	}
+func (t *TestsType)Temlplate(w http.ResponseWriter, r *http.Request)
+{
 	var Data TestsDataForTemplate
-	Data.Tests = tests
+	Data.Tests = *t
 	err := tmplTests.ExecuteTemplate(w, "tests", Data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
-
-func convertDate(dt string) (string, error) {
-	layout := "2006-01-02"
-	t, err := time.Parse(layout, dt)
-	if err != nil {
-		return "", err
+func (t *TestsType) GetTests {
+	for i, test := range *t {
+		params := fmt.Sprintf("id=%s&base=%s&dt=%s&mode=%s&start=%s&end=%s",
+			test.Id, test.Base, test.Dt, test.Mode, test.Start, test.End)
+		(*t)[i].FullUrl = constructUrl(r, params)
 	}
-	return t.Format("02.01.2006"), nil
 }
+func (t *TestsType) AddTest(w http.ResponseWriter, r *http.Request) {
 
-func AddTest(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(500 * time.Millisecond)
 	log.Print("HTMX request recieved in handleAddTest")
 	log.Print(r.Header.Get("HX-Request"))
 	//idName := r.PostFormValue("idName")
@@ -119,8 +104,23 @@ func AddTest(w http.ResponseWriter, r *http.Request) {
 		Added:    true,
 	}}, tests...)
 
-	tests.GetTests(w, r)
 }
+
+func constructUrl(r *http.Request, params string) string {
+	//lsChangesScriptName := "lsChanges"
+	fullUrl := "http://" + strings.Split(r.Host, ":")[0] + "/lsChanges/lsChanges.php" + "?" + params
+	return fullUrl
+}
+
+func convertDate(dt string) (string, error) {
+	layout := "2006-01-02"
+	t, err := time.Parse(layout, dt)
+	if err != nil {
+		return "", err
+	}
+	return t.Format("02.01.2006"), nil
+}
+
 func handleTestLsChanges(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("testLsChanges.html"))
 	currentDate := time.Now().Format("2006-01-02")
@@ -132,17 +132,23 @@ func handleTestLsChanges(w http.ResponseWriter, r *http.Request) {
 	}
 	tmpl.Execute(w, data)
 }
-func handleGetТests(w http.ResponseWriter, r *http.Request) {
-
-	tests.GetTests(w, r)
+func handleGetTests(w http.ResponseWriter, r *http.Request) {
+	tests.GetTests()
+	tests.Template(w, r)
 }
+func handleAddTest(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(500 * time.Millisecond)
+	tests.AddTest()
+	tests.Template(w, r)
+}
+
 func main() {
 
 	fmt.Println(quote.Go())
 
 	http.HandleFunc("/", handleTestLsChanges)
-	http.HandleFunc("GET /tests", handleGetТests)
-	http.HandleFunc("POST /tests", AddTest)
+	http.HandleFunc("GET /tests", handleGetTests)
+	http.HandleFunc("POST /tests", handleAddTest)
 	http.HandleFunc("GET /get-id-name-options", options.GetIDNameOptions)
 	http.HandleFunc("GET /get-mode-name-options", options.GetMODENameOptions)
 	http.HandleFunc("GET /get-base-name-options", options.GetBASENameOptions)
