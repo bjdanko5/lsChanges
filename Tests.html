@@ -1,0 +1,13 @@
+{{ define "tests" }}
+
+
+    {{ range .Tests }}
+        {{ block "test-list-element" .}}
+        <li class="list-group-item bg-primary text-white">
+        <h3>{{ .IdName }} - {{ .ModeName }}</h3>
+                <a class="{{if .Added}} text-warning{{else}} text-white{{end}}" href="{{ .FullUrl }}">{{ .FullUrl }} </a>
+        </li>
+    {{ end }}
+    {{ end }}
+
+{{ end }}

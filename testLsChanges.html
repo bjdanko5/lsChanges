@@ -19,21 +19,14 @@
     <div class="row mt-4 g-4">
         <div class="col-8">
             <h1 class="mb-4">Список тестов сервиса lsChanges</h1>
-            <ul class="list-group fs-5 me-5" id="test-list">
-                {{ range .Tests }}
-                {{ block "test-list-element" .}}
-                <li class="list-group-item bg-primary text-white">
-                    <h3>{{ .IdName }} - {{ .ModeName }}</h3>
-                    <a class="text-white" href="{{ .FullUrl }}">{{ .FullUrl }} </a>
-                </li>
-                {{ end }}
-                {{ end }}
+            <ul class="list-group fs-5 me-5" id="test-list"  hx-get="/tests"  hx-trigger="load" hx-target="#test-list" hx-swap="innerHTML" hx-indicator="#spinner">
             </ul>
         </div>
 
         <div class="col-4">
             <h1 class="mb-4">Новый Тест</h1>
-            <form hx-post="/add-test/" hx-target="#test-list" hx-swap="afterbegin" hx-indicator="#spinner">
+           <!-- <form hx-post="/add-test/" hx-target="#test-list" hx-swap="afterbegin" hx-indicator="#spinner"> -->
+            <form hx-post="/tests" hx-target="#test-list" hx-swap="innerHTML" hx-indicator="#spinner">
                 <div class="mb-2">
                     <label for="test-id" readonly hidden>Код Получатель отчета(id)</label>
                     <input type="text" name="id" id="test-id" class="form-control" readonly hidden/>
